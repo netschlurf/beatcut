@@ -1,0 +1,8 @@
+{
+  "name": "@beatcut/cli",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "beatcut": "./src/cli.js"
+  }
+}

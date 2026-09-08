@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://beatcut.local/script.schema.json",
+  "title": "BeatCutScript",
+  "type": "object",
+  "required": ["version", "audio", "config", "media", "timeline"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "audio": {
+      "type": "object",
+      "required": ["path", "duration"],
+      "properties": {
+        "path": { "type": "string" },
+        "duration": { "type": "number", "minimum": 0 },
+        "sample_rate": { "type": "integer" },
+        "bpm_estimate": { "type": ["number", "null"] },
+        "beat_count": { "type": "integer" }
+      }
+    },
+    "config": {
+      "type": "object",
+      "required": ["every_n_beats"],
+      "properties": {
+        "every_n_beats": { "type": "integer", "minimum": 1 },
+        "default_transition": { "type": "string" },
+        "min_event_gap": { "type": "number" }
+      }
+    },
+    "media": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["id", "type", "path"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "enum": ["image", "video"] },
+          "path": { "type": "string" },
+          "duration": { "type": ["number", "null"] },
+          "features": { "type": "object" }
+        }
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["t", "action", "media_id", "transition", "duration"],
+        "properties": {
+          "t": { "type": "number", "minimum": 0 },
+          "beat_index": { "type": "integer" },
+          "energy": { "type": "number" },
+          "action": { "enum": ["show", "hold"] },
+          "media_id": { "type": "string" },
+          "transition": {
+            "enum": ["cut", "fade", "slide_in", "zoom_in", "flash", "hold"]
+          },
+          "duration": { "type": "number", "minimum": 0 },
+          "src_in": { "type": "number" },
+          "src_out": { "type": "number" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "segments": { "type": "array" }
+  }
+}

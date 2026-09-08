@@ -1,0 +1,291 @@
+{
+  "version": 1,
+  "audio": {
+    "path": "/home/workdir/artifacts/beatcut/testdata/audio/click_120bpm.wav",
+    "duration": 16,
+    "sample_rate": 22050,
+    "bpm_estimate": 120.2755,
+    "beat_count": 32
+  },
+  "config": {
+    "every_n_beats": 2,
+    "default_transition": "auto",
+    "min_event_gap": 0.18
+  },
+  "media": {
+    "IMG_001": {
+      "id": "IMG_001",
+      "type": "image",
+      "path": "/home/workdir/artifacts/beatcut/testdata/media/black.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0,
+        "contrast": 0,
+        "saturation": 0,
+        "warmth": 0.5,
+        "sharpness": 0,
+        "energy": 0.1
+      }
+    },
+    "IMG_002": {
+      "id": "IMG_002",
+      "type": "image",
+      "path": "/home/workdir/artifacts/beatcut/testdata/media/blue_cold.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.1852,
+        "contrast": 0,
+        "saturation": 0.8995,
+        "warmth": 0,
+        "sharpness": 0,
+        "energy": 0.3778
+      }
+    },
+    "IMG_003": {
+      "id": "IMG_003",
+      "type": "image",
+      "path": "/home/workdir/artifacts/beatcut/testdata/media/gray.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.502,
+        "contrast": 0,
+        "saturation": 0,
+        "warmth": 0.5,
+        "sharpness": 0,
+        "energy": 0.0004
+      }
+    },
+    "IMG_004": {
+      "id": "IMG_004",
+      "type": "image",
+      "path": "/home/workdir/artifacts/beatcut/testdata/media/high_contrast.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.5,
+        "contrast": 1,
+        "saturation": 0,
+        "warmth": 0.5,
+        "sharpness": 0.0969,
+        "energy": 0.3694
+      }
+    },
+    "IMG_005": {
+      "id": "IMG_005",
+      "type": "image",
+      "path": "/home/workdir/artifacts/beatcut/testdata/media/low_contrast.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.6893,
+        "contrast": 0,
+        "saturation": 0.05,
+        "warmth": 0.5706,
+        "sharpness": 0,
+        "energy": 0.0554
+      }
+    },
+    "IMG_006": {
+      "id": "IMG_006",
+      "type": "image",
+      "path": "/home/workdir/artifacts/beatcut/testdata/media/red.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.2452,
+        "contrast": 0,
+        "saturation": 0.9091,
+        "warmth": 1,
+        "sharpness": 0,
+        "energy": 0.3691
+      }
+    },
+    "IMG_007": {
+      "id": "IMG_007",
+      "type": "image",
+      "path": "/home/workdir/artifacts/beatcut/testdata/media/white.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 1,
+        "contrast": 0,
+        "saturation": 0,
+        "warmth": 0.5,
+        "sharpness": 0,
+        "energy": 0.1
+      }
+    },
+    "IMG_008": {
+      "id": "IMG_008",
+      "type": "image",
+      "path": "/home/workdir/artifacts/beatcut/testdata/media/yellow_warm.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.7704,
+        "contrast": 0,
+        "saturation": 0.8755,
+        "warmth": 1,
+        "sharpness": 0,
+        "energy": 0.3605
+      }
+    }
+  },
+  "timeline": [
+    {
+      "t": 0.0232,
+      "beat_index": 0,
+      "energy": 0.0588,
+      "action": "show",
+      "media_id": "IMG_005",
+      "transition": "fade",
+      "duration": 0.952,
+      "reason": "low-energy beat (0.06) → image IMG_005"
+    },
+    {
+      "t": 0.9752,
+      "beat_index": 2,
+      "energy": 0.7932,
+      "action": "show",
+      "media_id": "IMG_002",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.79) → image IMG_002"
+    },
+    {
+      "t": 1.9737,
+      "beat_index": 4,
+      "energy": 0.9428,
+      "action": "show",
+      "media_id": "IMG_004",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.94) → image IMG_004"
+    },
+    {
+      "t": 2.9722,
+      "beat_index": 6,
+      "energy": 0.7576,
+      "action": "show",
+      "media_id": "IMG_006",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.76) → image IMG_006"
+    },
+    {
+      "t": 3.9706,
+      "beat_index": 8,
+      "energy": 0.8732,
+      "action": "show",
+      "media_id": "IMG_008",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.87) → image IMG_008"
+    },
+    {
+      "t": 4.9691,
+      "beat_index": 10,
+      "energy": 0.7192,
+      "action": "show",
+      "media_id": "IMG_002",
+      "transition": "zoom_in",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.72) → image IMG_002"
+    },
+    {
+      "t": 5.9675,
+      "beat_index": 12,
+      "energy": 0.8144,
+      "action": "show",
+      "media_id": "IMG_004",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.81) → image IMG_004"
+    },
+    {
+      "t": 6.966,
+      "beat_index": 14,
+      "energy": 0.6903,
+      "action": "show",
+      "media_id": "IMG_006",
+      "transition": "zoom_in",
+      "duration": 1.0217,
+      "reason": "high-energy beat (0.69) → image IMG_006"
+    },
+    {
+      "t": 7.9877,
+      "beat_index": 16,
+      "energy": 0.8107,
+      "action": "show",
+      "media_id": "IMG_008",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.81) → image IMG_008"
+    },
+    {
+      "t": 8.9861,
+      "beat_index": 18,
+      "energy": 0.7341,
+      "action": "show",
+      "media_id": "IMG_001",
+      "transition": "zoom_in",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.73) → image IMG_001"
+    },
+    {
+      "t": 9.9846,
+      "beat_index": 20,
+      "energy": 0.9172,
+      "action": "show",
+      "media_id": "IMG_007",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.92) → image IMG_007"
+    },
+    {
+      "t": 10.983,
+      "beat_index": 22,
+      "energy": 0.7853,
+      "action": "show",
+      "media_id": "IMG_002",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.79) → image IMG_002"
+    },
+    {
+      "t": 11.9815,
+      "beat_index": 24,
+      "energy": 0.9837,
+      "action": "show",
+      "media_id": "IMG_004",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.98) → image IMG_004"
+    },
+    {
+      "t": 12.98,
+      "beat_index": 26,
+      "energy": 0.8095,
+      "action": "show",
+      "media_id": "IMG_006",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (0.81) → image IMG_006"
+    },
+    {
+      "t": 13.9784,
+      "beat_index": 28,
+      "energy": 1,
+      "action": "show",
+      "media_id": "IMG_008",
+      "transition": "flash",
+      "duration": 0.9985,
+      "reason": "high-energy beat (1.00) → image IMG_008"
+    },
+    {
+      "t": 14.9769,
+      "beat_index": 30,
+      "energy": 0.8049,
+      "action": "show",
+      "media_id": "IMG_003",
+      "transition": "flash",
+      "duration": 1.0231,
+      "reason": "high-energy beat (0.80) → image IMG_003"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "audio": {
+    "click_120bpm.wav": {
+      "bpm": 120,
+      "duration_s": 16.0,
+      "expected_beats": 32,
+      "accept_bpm": [
+        118,
+        122
+      ],
+      "accept_beat_count_delta": 1,
+      "sample_rate": 22050,
+      "time_signature": "4/4",
+      "bars": 8
+    },
+    "click_90bpm.wav": {
+      "bpm": 90,
+      "duration_s": 21.3333,
+      "expected_beats": 32,
+      "accept_bpm": [
+        88,
+        92
+      ],
+      "accept_beat_count_delta": 1,
+      "sample_rate": 22050,
+      "time_signature": "4/4",
+      "bars": 8
+    },
+    "click_140bpm.wav": {
+      "bpm": 140,
+      "duration_s": 13.7143,
+      "expected_beats": 32,
+      "accept_bpm": [
+        138,
+        142
+      ],
+      "accept_beat_count_delta": 1,
+      "sample_rate": 22050,
+      "time_signature": "4/4",
+      "bars": 8
+    }
+  },
+  "images": {
+    "black.jpg": {
+      "brightness": "near 0",
+      "saturation": "near 0"
+    },
+    "white.jpg": {
+      "brightness": "near 1",
+      "saturation": "near 0"
+    },
+    "gray.jpg": {
+      "brightness": "near 0.5",
+      "contrast": "near 0",
+      "saturation": "near 0"
+    },
+    "red.jpg": {
+      "saturation": "high",
+      "warmth": "high"
+    },
+    "blue_cold.jpg": {
+      "warmth": "low",
+      "saturation": "high"
+    },
+    "yellow_warm.jpg": {
+      "warmth": "high"
+    },
+    "high_contrast.jpg": {
+      "contrast": "high",
+      "energy": "high"
+    },
+    "low_contrast.jpg": {
+      "contrast": "low",
+      "energy": "low"
+    }
+  }
+}

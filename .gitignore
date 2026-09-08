@@ -1,0 +1,6 @@
+native/build/
+node_modules/
+*.mp4
+script.json
+out.json
+media*.json

@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "audio": {
+    "path": "audio/click_120bpm.wav",
+    "duration": 16.0,
+    "sample_rate": 22050,
+    "bpm_estimate": 120,
+    "beat_count": 32
+  },
+  "config": {
+    "every_n_beats": 2,
+    "default_transition": "auto",
+    "min_event_gap": 0.18
+  },
+  "media": {
+    "IMG_black": {
+      "id": "IMG_black",
+      "type": "image",
+      "path": "media/black.jpg",
+      "duration": null,
+      "features": {
+        "energy": 0.5
+      }
+    },
+    "IMG_white": {
+      "id": "IMG_white",
+      "type": "image",
+      "path": "media/white.jpg",
+      "duration": null,
+      "features": {
+        "energy": 0.5
+      }
+    },
+    "IMG_red": {
+      "id": "IMG_red",
+      "type": "image",
+      "path": "media/red.jpg",
+      "duration": null,
+      "features": {
+        "energy": 0.5
+      }
+    },
+    "IMG_high": {
+      "id": "IMG_high",
+      "type": "image",
+      "path": "media/high_contrast.jpg",
+      "duration": null,
+      "features": {
+        "energy": 0.5
+      }
+    },
+    "IMG_blue": {
+      "id": "IMG_blue",
+      "type": "image",
+      "path": "media/blue_cold.jpg",
+      "duration": null,
+      "features": {
+        "energy": 0.5
+      }
+    },
+    "IMG_warm": {
+      "id": "IMG_warm",
+      "type": "image",
+      "path": "media/yellow_warm.jpg",
+      "duration": null,
+      "features": {
+        "energy": 0.5
+      }
+    },
+    "IMG_gray": {
+      "id": "IMG_gray",
+      "type": "image",
+      "path": "media/gray.jpg",
+      "duration": null,
+      "features": {
+        "energy": 0.5
+      }
+    },
+    "IMG_low": {
+      "id": "IMG_low",
+      "type": "image",
+      "path": "media/low_contrast.jpg",
+      "duration": null,
+      "features": {
+        "energy": 0.5
+      }
+    }
+  },
+  "timeline": [
+    {
+      "t": 0.0,
+      "beat_index": 0,
+      "energy": 0.3,
+      "action": "show",
+      "media_id": "IMG_black",
+      "transition": "cut",
+      "duration": 1.0,
+      "reason": "handwritten fixture for schema / render tests"
+    },
+    {
+      "t": 1.0,
+      "beat_index": 2,
+      "energy": 0.5,
+      "action": "show",
+      "media_id": "IMG_white",
+      "transition": "fade",
+      "duration": 1.0,
+      "reason": "handwritten fixture for schema / render tests"
+    },
+    {
+      "t": 2.0,
+      "beat_index": 4,
+      "energy": 0.7,
+      "action": "show",
+      "media_id": "IMG_red",
+      "transition": "cut",
+      "duration": 1.0,
+      "reason": "handwritten fixture for schema / render tests"
+    },
+    {
+      "t": 3.0,
+      "beat_index": 6,
+      "energy": 0.9,
+      "action": "show",
+      "media_id": "IMG_high",
+      "transition": "fade",
+      "duration": 1.0,
+      "reason": "handwritten fixture for schema / render tests"
+    },
+    {
+      "t": 4.0,
+      "beat_index": 8,
+      "energy": 0.4,
+      "action": "show",
+      "media_id": "IMG_blue",
+      "transition": "cut",
+      "duration": 1.0,
+      "reason": "handwritten fixture for schema / render tests"
+    },
+    {
+      "t": 5.0,
+      "beat_index": 10,
+      "energy": 0.8,
+      "action": "show",
+      "media_id": "IMG_warm",
+      "transition": "fade",
+      "duration": 1.0,
+      "reason": "handwritten fixture for schema / render tests"
+    },
+    {
+      "t": 6.0,
+      "beat_index": 12,
+      "energy": 0.35,
+      "action": "show",
+      "media_id": "IMG_gray",
+      "transition": "cut",
+      "duration": 1.0,
+      "reason": "handwritten fixture for schema / render tests"
+    },
+    {
+      "t": 7.0,
+      "beat_index": 14,
+      "energy": 0.2,
+      "action": "show",
+      "media_id": "IMG_low",
+      "transition": "fade",
+      "duration": 1.0,
+      "reason": "handwritten fixture for schema / render tests"
+    }
+  ]
+}
