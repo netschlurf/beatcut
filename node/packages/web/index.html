@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BeatCut Editor</title>
+<style>
+  :root{
+    --bg:#15171c; --bg2:#1b1e25; --bg3:#232730; --panel:#191c22;
+    --line:#2c313c; --txt:#e6e8ee; --mut:#8b93a5; --acc:#4aa8ff; --acc2:#2f7fd6;
+    --good:#39d98a; --warn:#ffb454; --bad:#ff6b6b;
+    --shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font:13px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+    display:flex;flex-direction:column;overflow:hidden}
+  button{font:inherit;color:var(--txt);background:var(--bg3);border:1px solid var(--line);
+    border-radius:6px;padding:5px 10px;cursor:pointer}
+  button:hover{border-color:var(--acc)}
+  button.active{background:var(--acc2);border-color:var(--acc);color:#fff}
+  input,select,textarea{font:inherit;color:var(--txt);background:var(--bg);border:1px solid var(--line);
+    border-radius:5px;padding:4px 7px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc)}
+  a{color:var(--acc)}
+
+  /* top bar */
+  header{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--panel);
+    border-bottom:1px solid var(--line);flex:0 0 auto}
+  header .title{font-weight:600;letter-spacing:.2px;margin-right:4px}
+  header .path{color:var(--mut);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+  header .spacer{flex:1}
+  header .stats{color:var(--mut);font-size:12px;display:flex;gap:12px}
+  header .stats b{color:var(--txt);font-weight:600}
+
+  /* main */
+  .main{flex:1;display:grid;grid-template-columns:260px 1fr;min-height:0}
+  aside{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  .mid{display:flex;flex-direction:column;min-height:0;position:relative}
+
+  /* media tree */
+  .tree-head{padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);
+    border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .tree-scroll{overflow:auto;flex:1}
+  .grp>summary{cursor:pointer;padding:6px 10px;font-weight:600;list-style:none;display:flex;align-items:center;gap:6px}
+  .grp>summary::-webkit-details-marker{display:none}
+  .grp>summary .chev{width:10px;color:var(--mut)}
+  .grp[open]>summary .chev::before{content:"▾"}
+  .grp:not([open])>summary .chev::before{content:"▸"}
+  .grp>summary .cnt{margin-left:auto;color:var(--mut);font-weight:400;font-size:11px}
+  .mrow{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 22px;cursor:pointer;border-left:2px solid transparent}
+  .mrow:hover{background:var(--bg3)}
+  .mrow.sel{background:#1c2735;border-left-color:var(--acc)}
+  .mrow .thumb{width:38px;height:26px;border-radius:4px;object-fit:cover;background:var(--bg);flex:0 0 auto}
+  .mrow .thumb.ph{display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px;border:1px solid var(--line)}
+  .mrow .meta{min-width:0;flex:1}
+  .mrow .id{font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mrow .sub{color:var(--mut);font-size:11px}
+  .badge{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:0 7px;font-size:10px;color:var(--mut)}
+  .energybar{height:3px;background:var(--bg);border-radius:2px;overflow:hidden;margin-top:3px}
+  .energybar>i{display:block;height:100%;background:linear-gradient(90deg,#3a7,#ffb454,#ff6b6b)}
+
+  /* middle tabs */
+  .tabs{display:flex;gap:4px;padding:8px 10px 0;background:var(--panel);border-bottom:1px solid var(--line)}
+  .tabs button{background:transparent;border:none;border-radius:6px 6px 0 0;padding:6px 14px;color:var(--mut)}
+  .tabs button.active{background:var(--bg);color:var(--txt);border:1px solid var(--line);border-bottom:none}
+  .pane{flex:1;min-height:0;overflow:auto;background:var(--bg)}
+  .pane.hidden{display:none}
+
+  /* preview stage */
+  .preview-wrap{display:flex;flex-direction:column;height:100%;padding:14px;gap:10px}
+  .stage{flex:1;min-height:0;background:#000;border-radius:10px;overflow:hidden;position:relative;
+    display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+  .stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+  .stage .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;mix-blend-mode:screen}
+  .stage .label{position:absolute;left:10px;bottom:8px;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:6px;
+    font-size:12px;color:#fff;font-family:ui-monospace,monospace;pointer-events:none}
+  .stage .empty{color:var(--mut);font-size:13px}
+  .ctrls{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  .scrub{flex:1}
+  .time{font-family:ui-monospace,monospace;color:var(--mut);font-size:12px;min-width:160px;text-align:right}
+
+  /* properties */
+  .props{padding:14px 18px;max-width:760px}
+  .props h2{margin:0 0 4px;font-size:15px}
+  .props .hint{color:var(--mut);margin:0 0 14px;font-size:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+  .card h3{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+  .grid{display:grid;grid-template-columns:130px 1fr;gap:8px 12px;align-items:center}
+  .grid label{color:var(--mut);font-size:12px}
+  .grid .full{grid-column:1/-1}
+  .feat{display:flex;align-items:center;gap:8px}
+  .feat .bar{flex:1;height:8px;background:var(--bg);border-radius:5px;overflow:hidden}
+  .feat .bar>i{display:block;height:100%;background:var(--acc)}
+  .feat .val{font-family:ui-monospace,monospace;font-size:11px;width:48px;text-align:right;color:var(--mut)}
+  textarea{width:100%;min-height:46px;resize:vertical}
+
+  /* timeline */
+  .tl{flex:0 0 auto;background:var(--panel);border-top:1px solid var(--line);display:flex;flex-direction:column;height:210px}
+  .tl-head{display:flex;align-items:center;gap:10px;padding:6px 12px;border-bottom:1px solid var(--line)}
+  .tl-head .zoom{display:flex;gap:4px}
+  .tl-head .legend{display:flex;gap:14px;color:var(--mut);font-size:11px;margin-left:auto}
+  .tl-head .legend span{display:flex;align-items:center;gap:5px}
+  .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .tl-body{position:relative;overflow:auto;flex:1;cursor:text}
+  .tl-inner{position:relative;height:140px;min-width:100%}
+  .ruler{position:absolute;top:0;left:0;right:0;height:24px;background:var(--bg2);border-bottom:1px solid var(--line)}
+  .beat{position:absolute;top:0;width:1px;background:var(--line)}
+  .beat.major{background:#445064;height:24px}
+  .beat.minor{background:#2c333f;height:14px;top:10px}
+  .beat .lbl{position:absolute;top:6px;left:3px;font-size:9px;color:var(--mut);font-family:ui-monospace,monospace}
+  .track{position:absolute;top:30px;left:0;right:0;height:104px}
+  .clip{position:absolute;top:6px;height:78px;border-radius:6px;overflow:hidden;cursor:pointer;
+    border:1px solid rgba(0,0,0,.4);color:#fff;display:flex;flex-direction:column;justify-content:space-between;
+    transition:transform .05s, box-shadow .1s}
+  .clip:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+  .clip.sel{outline:2px solid var(--acc);outline-offset:1px;z-index:3}
+  .clip .ct{padding:3px 6px;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+  .clip .cb{padding:2px 6px;font-size:10px;opacity:.9;display:flex;gap:6px;font-family:ui-monospace,monospace}
+  .clip .thumb{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.35}
+  .clip .tr{position:absolute;top:4px;right:4px;font-size:9px;background:rgba(0,0,0,.5);padding:1px 5px;border-radius:4px}
+  .playhead{position:absolute;top:0;bottom:0;width:2px;background:var(--acc);z-index:5;pointer-events:none}
+  .playhead::before{content:"";position:absolute;top:-1px;left:-5px;width:12px;height:12px;background:var(--acc);
+    border-radius:50%;transform:translateY(0)}
+  .empty-state{padding:30px;text-align:center;color:var(--mut)}
+
+  /* toast */
+  #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--bg3);
+    border:1px solid var(--line);padding:8px 16px;border-radius:8px;box-shadow:var(--shadow);opacity:0;
+    transition:opacity .2s;pointer-events:none;z-index:50}
+  #toast.show{opacity:1}
+
+  /* timeline waveform + beat pulse */
+  #wave{position:absolute;top:0;left:0;height:140px;pointer-events:none;z-index:0;opacity:.55}
+  .ruler{z-index:1} .track{z-index:1}
+  .beatpulse{position:absolute;left:50%;top:50%;width:240px;height:240px;border-radius:50%;
+    border:3px solid #4aa8ff;transform:translate(-50%,-50%) scale(1);opacity:0;pointer-events:none;
+    transition:opacity .08s ease-out, transform .12s ease-out;box-shadow:0 0 24px rgba(74,168,255,.4)}
+  .beatno{font-family:ui-monospace,monospace;color:var(--acc);font-size:12px;min-width:70px}
+</style>
+</head>
+<body>
+  <header>
+    <div class="title">BeatCut</div>
+    <button id="btnOpen">Open…</button>
+    <input id="filePicker" type="file" accept=".json,application/json" hidden />
+    <select id="fileList" title="repo JSON files" style="max-width:180px"></select>
+    <span class="path" id="curPath">—</span>
+    <div class="spacer"></div>
+    <div class="stats" id="stats"></div>
+    <button id="btnSave">Save</button>
+  </header>
+
+  <div class="main">
+    <aside>
+      <div class="tree-head">Medien</div>
+      <div class="tree-scroll" id="tree"></div>
+    </aside>
+
+    <section class="mid">
+      <div class="tabs">
+        <button id="tabProps" class="active">Eigenschaften</button>
+        <button id="tabPreview">Vorschau</button>
+      </div>
+
+      <div class="pane" id="paneProps">
+        <div class="props" id="props"></div>
+      </div>
+
+      <div class="pane hidden" id="panePreview">
+        <div class="preview-wrap">
+          <div class="stage" id="stage">
+            <img id="imgA" style="opacity:0" />
+            <img id="imgB" style="opacity:0" />
+            <div class="flash" id="flash"></div>
+            <div class="beatpulse" id="beatPulse"></div>
+            <div class="label" id="stageLabel"></div>
+            <div class="empty" id="stageEmpty">kein Script geladen</div>
+          </div>
+          <div class="ctrls">
+            <button id="btnPlay">▶ Play</button>
+            <input class="scrub" id="scrub" type="range" min="0" max="1000" value="0" />
+            <div class="time" id="time">00:00.0 / 00:00.0</div>
+            <span class="beatno" id="beatLabel"></span>
+            <button id="btnLoop" title="loop">↻</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="tl">
+    <div class="tl-head">
+      <strong>Timeline</strong>
+      <div class="zoom">
+        <button id="zOut">−</button>
+        <button id="zIn">+</button>
+        <button id="zFit" title="fit">Fit</button>
+      </div>
+      <div class="legend">
+        <span><i class="sw" style="background:#39d98a"></i>low</span>
+        <span><i class="sw" style="background:#ffb454"></i>mid</span>
+        <span><i class="sw" style="background:#ff6b6b"></i>high</span>
+        <span>·</span>
+        <span id="tlZoomLabel">60 px/s</span>
+      </div>
+    </div>
+    <div class="tl-body" id="tlBody">
+      <div class="tl-inner" id="tlInner">
+        <canvas id="wave"></canvas>
+        <div class="ruler" id="ruler"></div>
+        <div class="track" id="track"></div>
+        <div class="playhead" id="playhead"></div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio" preload="auto"></audio>
+  <div id="toast"></div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, html) => { const e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; };
+const fmt = (s) => { s=Math.max(0,s); const m=Math.floor(s/60), x=s-m*60; return `${String(m).padStart(2,"0")}:${x.toFixed(1).padStart(4,"0")}`; };
+const enc = (s) => encodeURIComponent(s);
+
+// ---------- state ----------
+let S = null;          // script
+let curPath = null;
+let pxPerSec = 60;
+let selClip = -1;      // timeline index
+let selMedia = null;   // media id
+let mode = "props";    // props | preview
+let currentTime = 0;
+let playing = false;
+let loop = false;
+let lastRAF = 0;
+
+// ---------- boot ----------
+(async function init(){
+  try {
+    const lr = await fetch("/api/list").then(r=>r.json());
+    const sel = $("fileList");
+    sel.innerHTML = '<option value="">— repo file —</option>';
+    for (const f of lr.files){ const o=el("option"); o.value=f; o.textContent=f; sel.appendChild(o); }
+  } catch(e){}
+  // default: out.json at repo root
+  await loadScript("");
+  bindUI();
+})();
+
+// ---------- load ----------
+async function loadScript(rel){
+  let url = "/api/script";
+  if (rel){ url += "?path=" + enc(rel); curPath = rel.startsWith("/") ? rel : (await repoRoot() + rel); }
+  else { curPath = null; }
+  try{
+    const r = await fetch(url);
+    if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.error||r.status); }
+    S = await r.json();
+    if(!curPath){ curPath = S && S.audio && S.audio.path ? null : null; }
+    $("curPath").textContent = rel || (S ? "(out.json)" : "—");
+    buildTree(); renderTimeline(); renderProps(); renderStats(); loadAudio(); loadWaveform();
+    selClip = -1; selMedia = null;
+  }catch(err){
+    toast("Load failed: "+err.message);
+    $("props").innerHTML = '<div class="empty-state">Kein Script geladen. Öffne ein script.json / out.json.</div>';
+  }
+}
+async function repoRoot(){ try{ return (await fetch("/api/list").then(r=>r.json())).root + "/"; }catch(e){ return ""; } }
+
+function loadAudio(){
+  const a = $("audio");
+  if (S && S.audio && S.audio.path){ a.src = "/api/file?path=" + enc(S.audio.path); a.load(); }
+  else { a.removeAttribute("src"); }
+}
+
+// ---------- waveform + beats ----------
+let wavePeaks = null;   // Float32Array, normalized 0..1
+let audioCtx = null;
+async function loadWaveform(){
+  wavePeaks = null; drawWave();
+  if(!S || !S.audio || !S.audio.path) return;
+  try{
+    const r = await fetch("/api/file?path=" + enc(S.audio.path));
+    const buf = await r.arrayBuffer();
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const decoded = await audioCtx.decodeAudioData(buf.slice(0));
+    const ch = decoded.getChannelData(0);
+    const N = 2200;
+    const block = Math.max(1, Math.floor(ch.length / N));
+    const peaks = new Float32Array(N);
+    for(let i=0;i<N;i++){ let mx=0; const s=i*block; for(let j=0;j<block;j++){ const v=Math.abs(ch[s+j]||0); if(v>mx) mx=v; } peaks[i]=mx; }
+    let mx=0; for(const p of peaks) if(p>mx) mx=p; if(mx>0) for(let i=0;i<N;i++) peaks[i]/=mx;
+    wavePeaks = peaks; drawWave();
+  }catch(e){ console.warn("waveform decode failed", e); }
+}
+function drawWave(){
+  const c=$("wave"), inner=$("tlInner"); if(!c) return;
+  const W = Math.max(inner.clientWidth||0, $("tlBody").clientWidth||0);
+  const H = 140;
+  c.width=W; c.height=H; c.style.width=W+"px"; c.style.height=H+"px";
+  const ctx=c.getContext("2d"); ctx.clearRect(0,0,W,H);
+  if(!S) return;
+  const D=dur(); const n=S.config?.every_n_beats||1;
+  // waveform envelope
+  if(wavePeaks){
+    const N=wavePeaks.length; const mid=H-20; const amp=H-34;
+    ctx.fillStyle="#33415a";
+    for(let i=0;i<N;i++){
+      const x=(i/(N-1))*W; const h=wavePeaks[i]*amp; ctx.fillRect(x, mid-h/2, 1, h);
+    }
+  }
+  // beat lines across full height
+  beats().forEach((t,i)=>{
+    const x=t*pxPerSec; const major=(i%n===0);
+    ctx.strokeStyle = major?"#44506466":"#2c333f44";
+    ctx.lineWidth = major?1:1;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  });
+}
+
+function renderStats(){
+  if(!S){ $("stats").innerHTML=""; return; }
+  const a=S.audio||{}, c=S.config||{}, m=S.media||{}, tl=S.timeline||[];
+  const used=new Set(tl.map(e=>e.media_id));
+  $("stats").innerHTML = `
+    <span>BPM <b>${a.bpm_estimate!=null?a.bpm_estimate.toFixed(1):"?"}</b></span>
+    <span>Dauer <b>${fmt(a.duration||0)}</b></span>
+    <span>Beats <b>${a.beat_count||"?"}</b></span>
+    <span>Clips <b>${tl.length}</b></span>
+    <span>Medien <b>${Object.keys(m).length}</b> (${used.size} verwendet)</span>
+    <span>every_n <b>${c.every_n_beats||"?"}</b></span>`;
+}
+
+// ---------- media tree ----------
+function buildTree(){
+  const root = $("tree"); root.innerHTML="";
+  if(!S){ root.innerHTML='<div class="empty-state">kein Script</div>'; return; }
+  const m = S.media||{}; const tl = S.timeline||[];
+  const usedIds = [...new Set(tl.map(e=>e.media_id))];
+  const useCount = {}; tl.forEach(e=>{ useCount[e.media_id]=(useCount[e.media_id]||0)+1; });
+  const allIds = Object.keys(m);
+
+  const gUsed = el("details","grp"); gUsed.open=true;
+  gUsed.appendChild(summ("Im Schnitt", usedIds.length));
+  usedIds.forEach(id=>{ if(m[id]) gUsed.appendChild(mediaRow(id, useCount[id]||0)); });
+
+  const gAvail = el("details","grp"); gAvail.open=true;
+  const avail = allIds.filter(id=>!usedIds.includes(id));
+  gAvail.appendChild(summ("Verfügbar", avail.length));
+  if(avail.length===0) gAvail.appendChild(emptyRow("(alle verwendet)"));
+  avail.forEach(id=> gAvail.appendChild(mediaRow(id, 0)));
+
+  const gAll = el("details","grp");
+  gAll.appendChild(summ("Alle Medien", allIds.length));
+  allIds.forEach(id=> gAll.appendChild(mediaRow(id, useCount[id]||0)));
+
+  root.append(gUsed, gAvail, gAll);
+
+  function summ(txt,n){ const s=el("summary");
+    s.innerHTML=`<span class="chev"></span>${txt}<span class="cnt">${n}</span>`; return s; }
+}
+function emptyRow(txt){ const r=el("div","mrow"); r.style.opacity=.6; r.innerHTML=`<div class="meta"><div class="sub">${txt}</div></div>`; return r; }
+function mediaRow(id, count){
+  const m=S.media[id]; const r=el("div","mrow"); r.dataset.id=id;
+  if(selMedia===id) r.classList.add("sel");
+  const ph = (m.type==="video")?"▶":"◳";
+  r.innerHTML = `
+    <div class="thumb ph">${ph}</div>
+    <div class="meta">
+      <div class="id">${id} ${count?`<span class="badge">×${count}</span>`:""}</div>
+      <div class="sub">${m.type}${m.duration?` · ${fmt(m.duration)}`:""}</div>
+      <div class="energybar"><i style="width:${Math.round((m.features?.energy||0)*100)}%"></i></div>
+    </div>`;
+  // lazy thumbnail via real path
+  if(m.type==="image"){ const t=r.querySelector(".thumb"); t.classList.remove("ph");
+    const img=el("img"); img.loading="lazy"; img.src="/api/file?path="+enc(m.path);
+    img.onerror=()=>{ t.classList.add("ph"); t.textContent="◳"; img.remove(); };
+    t.appendChild(img); }
+  r.onclick=()=>{ selMedia=id; mode="props"; switchTab("props"); renderProps(); buildTree(); };
+  return r;
+}
+
+// ---------- timeline ----------
+function dur(){ return (S && S.audio && S.audio.duration) ? S.audio.duration : 0; }
+function beats(){
+  if(!S||!S.audio||!S.audio.bpm_estimate) return [];
+  const bpm=S.audio.bpm_estimate, total=dur(); const per=60/bpm; const n=Math.floor(total/per+1e-6);
+  const out=[]; for(let i=0;i<=n;i++) out.push(i*per); return out;
+}
+function energyColor(e){
+  if(e==null) return "#445";
+  if(e<0.35) return "#2f8a5b"; if(e<0.7) return "#b9791f"; return "#b3463f";
+}
+function renderTimeline(){
+  const inner=$("tlInner"), ruler=$("ruler"), track=$("track");
+  ruler.innerHTML=""; track.innerHTML="";
+  if(!S){ inner.style.width="100%"; track.innerHTML='<div class="empty-state">kein Script</div>'; return; }
+  const D=dur(); const w=Math.max($("tlBody").clientWidth, D*pxPerSec+40);
+  inner.style.width=w+"px";
+  // ruler beats
+  const n = S.config?.every_n_beats || 1;
+  beats().forEach((t,i)=>{
+    const major = (i % n === 0);
+    const b=el("div", major?"beat major":"beat minor");
+    b.style.left=(t*pxPerSec)+"px";
+    if(major){ const l=el("span","lbl"); l.textContent=i; b.appendChild(l); }
+    ruler.appendChild(b);
+  });
+  // end marker
+  const end=el("div","beat major"); end.style.left=(D*pxPerSec)+"px"; end.style.height="24px"; ruler.appendChild(end);
+  // clips
+  (S.timeline||[]).forEach((c,i)=>{
+    const left=c.t*pxPerSec, w=Math.max(6, c.duration*pxPerSec-1);
+    const m=S.media[c.media_id];
+    const clip=el("div","clip"+(selClip===i?" sel":""));
+    clip.style.left=left+"px"; clip.style.width=w+"px";
+    clip.style.background=energyColor(c.energy);
+    if(m && m.type==="image"){
+      const th=el("div","thumb"); th.style.backgroundImage=`url("/api/file?path=${enc(m.path)}")`; clip.appendChild(th);
+    }
+    const ct=el("div","ct"); ct.textContent=c.media_id; clip.appendChild(ct);
+    const cb=el("div","cb"); cb.innerHTML=`<span>${fmt(c.t)}</span><span>· ${(c.duration||0).toFixed(2)}s</span>`;
+    clip.appendChild(cb);
+    const tr=el("div","tr"); tr.textContent=c.transition; clip.appendChild(tr);
+    clip.onclick=(e)=>{ e.stopPropagation(); selClip=i; selMedia=null; mode="props"; switchTab("props"); renderProps(); renderTimeline(); };
+    track.appendChild(clip);
+  });
+  movePlayhead(); drawWave();
+  $("tlZoomLabel").textContent = Math.round(pxPerSec)+" px/s";
+}
+function movePlayhead(){ const p=$("playhead"); p.style.left=(currentTime*pxPerSec)+"px";
+  // auto-scroll to keep playhead visible
+  const body=$("tlBody"), x=currentTime*pxPerSec;
+  if(x < body.scrollLeft || x > body.scrollLeft+body.clientWidth-20) body.scrollLeft = Math.max(0, x-30);
+  const sc=$("scrub"); if(!scDragging) sc.value = String(Math.round(currentTime/Math.max(dur(),0.001)*1000));
+  $("time").textContent = `${fmt(currentTime)} / ${fmt(dur())}`;
+}
+
+// ---------- properties ----------
+function renderProps(){
+  const p=$("props");
+  if(!S){ p.innerHTML='<div class="empty-state">Kein Script geladen.</div>'; return; }
+  if(selClip>=0 && S.timeline[selClip]){ renderClipProps(); return; }
+  if(selMedia && S.media[selMedia]){ renderMediaProps(); return; }
+  renderScriptProps();
+}
+function renderScriptProps(){
+  const p=$("props");
+  const a=S.audio||{}, c=S.config||{};
+  p.innerHTML = `
+    <h2>Script</h2>
+    <p class="hint">Wähle einen Clip in der Timeline oder ein Medium im Baum, um Eigenschaften zu bearbeiten.</p>
+    <div class="card"><h3>Audio</h3>
+      <div class="grid">
+        <label>Pfad</label><input id="f_auPath" value="${esc(a.path||"")}">
+        <label>Dauer</label><input type="number" step="0.01" value="${a.duration||0}" data-bind="audio.duration">
+        <label>Sample-Rate</label><input type="number" value="${a.sample_rate||0}" data-bind="audio.sample_rate">
+        <label>BPM</label><input type="number" step="0.01" value="${a.bpm_estimate||0}" data-bind="audio.bpm_estimate">
+        <label>Beat-Count</label><input type="number" value="${a.beat_count||0}" data-bind="audio.beat_count">
+      </div></div>
+    <div class="card"><h3>Config</h3>
+      <div class="grid">
+        <label>every_n_beats</label><input type="number" min="1" value="${c.every_n_beats||1}" data-bind="config.every_n_beats">
+        <label>default_transition</label><input value="${esc(c.default_transition||"")}" data-bind="config.default_transition">
+        <label>min_event_gap</label><input type="number" step="0.01" value="${c.min_event_gap||0}" data-bind="config.min_event_gap">
+      </div></div>
+    <div class="card"><h3>Hinweis</h3>
+      <div class="hint">Änderungen an Clips/Medien gelten live für Vorschau und Timeline. „Save“ schreibt zurück in die JSON-Datei.</div></div>`;
+  bindBinders();
+}
+function renderClipProps(){
+  const i=selClip, c=S.timeline[i], m=S.media[c.media_id]||{};
+  const p=$("props");
+  const mediaOpts = Object.keys(S.media).map(id=>`<option ${id===c.media_id?"selected":""}>${id}</option>`).join("");
+  const transOpts = ["cut","fade","slide_in","zoom_in","flash","hold"].map(t=>`<option ${t===c.transition?"selected":""}>${t}</option>`).join("");
+  const actOpts = ["show","hold"].map(t=>`<option ${t===c.action?"selected":""}>${t}</option>`).join("");
+  p.innerHTML = `
+    <h2>Clip #${i} <span style="color:var(--mut);font-weight:400">→ ${esc(c.media_id)}</span></h2>
+    <p class="hint">${esc(c.reason||"")}</p>
+    <div class="card"><h3>Event</h3>
+      <div class="grid">
+        <label>media_id</label><select id="f_mid">${mediaOpts}</select>
+        <label>transition</label><select id="f_tr">${transOpts}</select>
+        <label>action</label><select id="f_ac">${actOpts}</select>
+        <label>t (Start)</label><input id="f_t" type="number" step="0.001" value="${c.t}">
+        <label>duration</label><input id="f_d" type="number" step="0.001" value="${c.duration}">
+        <label>energy</label><input id="f_en" type="number" step="0.001" value="${c.energy??""}">
+        <label>beat_index</label><input id="f_bi" type="number" value="${c.beat_index??""}">
+        <label>src_in</label><input id="f_si" type="number" step="0.001" value="${c.src_in??""}">
+        <label>src_out</label><input id="f_so" type="number" step="0.001" value="${c.src_out??""}">
+        <label>reason</label><textarea id="f_rs">${esc(c.reason||"")}</textarea>
+      </div></div>
+    <div class="card"><h3>Verknüpftes Medium</h3>${mediaCardInner(m)}
+    <div style="display:flex;gap:8px">
+      <button id="f_prev">← vorheriger</button>
+      <button id="f_next">nächster →</button>
+      <button id="f_dup">Duplizieren</button>
+      <button id="f_del" style="margin-left:auto;color:#ff8585">Clip löschen</button>
+    </div>`;
+  $("f_mid").onchange=e=>{ c.media_id=e.target.value; renderTimeline(); renderProps(); };
+  $("f_tr").onchange=e=>{ c.transition=e.target.value; renderTimeline(); renderProps(); };
+  $("f_ac").onchange=e=>{ c.action=e.target.value; };
+  $("f_t").oninput =e=>{ c.t=+e.target.value; renderTimeline(); };
+  $("f_d").oninput =e=>{ c.duration=+e.target.value; renderTimeline(); };
+  $("f_en").oninput =e=>{ c.energy=e.target.value===""?undefined:+e.target.value; renderTimeline(); };
+  $("f_bi").oninput =e=>{ c.beat_index=e.target.value===""?undefined:+e.target.value; };
+  $("f_si").oninput =e=>{ c.src_in=e.target.value===""?undefined:+e.target.value; };
+  $("f_so").oninput =e=>{ c.src_out=e.target.value===""?undefined:+e.target.value; };
+  $("f_rs").oninput =e=>{ c.reason=e.target.value; };
+  $("f_prev").onclick=()=>{ if(i>0){ selClip=i-1; renderProps(); renderTimeline(); } };
+  $("f_next").onclick=()=>{ if(i<S.timeline.length-1){ selClip=i+1; renderProps(); renderTimeline(); } };
+  $("f_dup").onclick=()=>{ const n={...c, t:c.t+c.duration}; S.timeline.splice(i+1,0,n); selClip=i+1; renderTimeline(); renderProps(); };
+  $("f_del").onclick=()=>{ S.timeline.splice(i,1); selClip=-1; renderTimeline(); renderProps(); buildTree(); renderStats(); };
+}
+function renderMediaProps(){
+  const id=selMedia, m=S.media[id]; if(!m) return;
+  const p=$("props");
+  p.innerHTML=`
+    <h2>Medium ${esc(id)}</h2>
+    <div class="card"><h3>Info</h3>
+      <div class="grid">
+        <label>id</label><input value="${esc(id)}" id="f_mid_id">
+        <label>type</label><input value="${esc(m.type)}" id="f_mtype">
+        <label>path</label><input value="${esc(m.path)}" id="f_mpath" style="width:100%">
+        <label>duration</label><input type="number" step="0.01" value="${m.duration??""}" id="f_mdur">
+      </div></div>
+    <div class="card"><h3>Visual Features</h3>${featGrid(m.features||{})}</div>
+    <p class="hint">Medien-IDs können hier umbenannt werden — bestehende Timeline-Referenzen werden mitgeführt.</p>`;
+  $("f_mid_id").onchange=e=>{
+    const nid=e.target.value; if(nid===id) return;
+    if(S.media[nid]){ toast("ID existiert schon"); e.target.value=id; return; }
+    const nm={...m, id:nid}; delete S.media[id]; S.media[nid]=nm;
+    S.timeline.forEach(c=>{ if(c.media_id===id) c.media_id=nid; });
+    selMedia=nid; buildTree(); renderProps();
+  };
+  $("f_mpath").onchange=e=>{ m.path=e.target.value; };
+  $("f_mtype").onchange=e=>{ m.type=e.target.value; buildTree(); };
+  $("f_mdur").oninput =e=>{ m.duration=e.target.value===""?null:+e.target.value; };
+  bindFeat(m);
+}
+function mediaCardInner(m){
+  let thumb="";
+  if(m && m.path){ thumb = m.type==="image"
+    ? `<img src="/api/file?path=${enc(m.path)}" style="max-width:160px;max-height:90px;border-radius:6px;border:1px solid var(--line)">`
+    : `<div class="hint">[video] ${esc(m.path||"")}</div>`; }
+  return `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">${thumb||'<div class="thumb ph">◳</div>'}
+    <div style="flex:1"><div class="hint">${esc(m.type||"")} · ${esc(m.path||"")}</div></div></div>
+    ${featGrid(m.features||{})}`;
+}
+function featGrid(f){
+  const items=[["brightness","Helligkeit"],["contrast","Kontrast"],["saturation","Sättigung"],
+    ["warmth","Wärme"],["sharpness","Schärfe"],["energy","Visual Energy"]];
+  return items.map(([k,l])=>`
+    <div class="grid" style="grid-template-columns:120px 1fr 50px;margin-bottom:6px">
+      <label>${l}</label>
+      <div class="feat"><div class="bar"><i style="width:${Math.round((f[k]||0)*100)}%"></i></div></div>
+      <span class="val" data-feat="${k}">${(f[k]??0).toFixed(3)}</span>
+    </div>`).join("") +
+    `<div class="hint" style="margin-top:6px">Werte 0..1 — klicken zum Editieren deaktiviert (read-only).</div>`;
+}
+function bindFeat(m){ /* read-only features for now */ }
+function bindBinders(){
+  document.querySelectorAll("[data-bind]").forEach(inp=>{
+    inp.oninput=()=>{
+      const path=inp.dataset.bind.split("."); let o=S;
+      for(let i=0;i<path.length-1;i++) o=o[path[i]];
+      const v=inp.value; o[path[path.length-1]] = inp.type==="number" ? (v===""?0:+v) : v;
+      renderTimeline(); renderStats();
+    };
+  });
+  const ap=$("f_auPath"); if(ap) ap.onchange=()=>{ S.audio.path=ap.value; loadAudio(); loadWaveform(); };
+}
+const esc=(s)=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// ---------- preview ----------
+let imgA=$("imgA"), imgB=$("imgB"), stageLabel=$("stageLabel"), flashEl=$("flash");
+let curLayer=imgA, prevLayer=imgB;
+let activeClipIdx=-1;
+function switchTab(t){ mode=t; $("tabProps").classList.toggle("active",t==="props");
+  $("tabPreview").classList.toggle("active",t==="preview");
+  $("paneProps").classList.toggle("hidden",t!=="props");
+  $("panePreview").classList.toggle("hidden",t!=="preview");
+  if(t==="preview") renderPreviewFrame(); }
+$("tabProps").onclick=()=>switchTab("props");
+$("tabPreview").onclick=()=>switchTab("preview");
+
+function clipAt(t){
+  if(!S||!S.timeline) return -1;
+  let idx=-1;
+  for(let i=0;i<S.timeline.length;i++){ if(S.timeline[i].t<=t+1e-6) idx=i; else break; }
+  return idx;
+}
+function mediaImg(id){ const m=S.media[id]; return m && m.type==="image" ? `/api/file?path=${enc(m.path)}` : null; }
+
+function renderPreviewFrame(){
+  const i=clipAt(currentTime); const D=dur();
+  $("scrub").max=1000;
+  $("stageEmpty").style.display = S ? "none" : "block";
+  if(i===activeClipIdx && activeClipIdx!==-1){ /* same clip, only update label/zoom if needed */ }
+  if(i!==activeClipIdx){ activateClip(i); activeClipIdx=i; }
+  // continuous zoom/pan for current clip
+  if(i>=0){ const c=S.timeline[i]; const m=S.media[c.media_id];
+    const into = (currentTime - c.t) / Math.max(c.duration,0.001);
+    if(c.transition==="zoom_in" && curLayer){ curLayer.style.transform=`scale(${1+0.08*Math.min(1,into)})`; }
+    stageLabel.textContent = `#${i} ${c.media_id} · ${c.transition}`;
+  } else { stageLabel.textContent=""; }
+}
+function activateClip(i){
+  if(i<0){ curLayer.style.opacity=0; prevLayer.style.opacity=0; return; }
+  const c=S.timeline[i]; const url=mediaImg(c.media_id);
+  // swap layers: prev <- cur, cur <- new
+  const oldCur=curLayer; curLayer=prevLayer; prevLayer=oldCur;
+  if(url){ curLayer.src=url; curLayer.style.transform=""; }
+  curLayer.style.opacity="0"; prevLayer.style.opacity="1";
+  const tr=c.transition;
+  const durIn = Math.min(0.6, c.duration*0.3);
+  if(tr==="cut"){ curLayer.style.transition="none"; curLayer.style.opacity="1"; }
+  else if(tr==="fade"){ curLayer.style.transition=`opacity ${durIn}s linear`; requestAnimationFrame(()=>{curLayer.style.opacity="1"; prevLayer.style.transition=`opacity ${durIn}s linear`; prevLayer.style.opacity="0";}); }
+  else if(tr==="flash"){ curLayer.style.transition="none"; curLayer.style.opacity="1"; flashEl.style.transition="none"; flashEl.style.opacity="1"; requestAnimationFrame(()=>{ flashEl.style.transition=`opacity .25s ease-out`; flashEl.style.opacity="0"; }); }
+  else if(tr==="slide_in"){ curLayer.style.transition=`transform ${durIn}s ease-out, opacity .05s`; curLayer.style.transform="translateX(100%)"; curLayer.style.opacity="1"; requestAnimationFrame(()=>{curLayer.style.transform="translateX(0)"; prevLayer.style.transition=`opacity ${durIn}s`; prevLayer.style.opacity="0";}); }
+  else if(tr==="zoom_in"){ curLayer.style.transition=`opacity .1s, transform ${c.duration||1}s linear`; curLayer.style.opacity="1"; }
+  else { curLayer.style.transition="none"; curLayer.style.opacity="1"; } // hold / unknown
+}
+function currentBeat(){ const bs=beats(); let b=-1; for(let i=0;i<bs.length;i++){ if(bs[i]<=currentTime+1e-6) b=i; else break; } return b; }
+function beatPeriod(){ const bs=beats(); return bs.length>1 ? (bs[1]-bs[0]) : (60/(S?.audio?.bpm_estimate||120)); }
+function updateBeatPulse(){
+  const p=$("beatPulse"); const lbl=$("beatLabel"); const i=currentBeat();
+  if(i>=0){ const bs=beats(); const since=currentTime-bs[i]; const per=beatPeriod();
+    const k=Math.max(0,1-since/Math.max(per*0.45,0.05));
+    p.style.opacity=String(0.12+0.55*k); p.style.transform=`translate(-50%,-50%) scale(${1+0.18*k})`;
+    lbl.textContent = "Beat "+i;
+  } else { p.style.opacity="0"; lbl.textContent=""; }
+}
+function tick(now){
+  if(!playing) return;
+  const a=$("audio");
+  if(a && !a.paused && a.readyState>=2){ currentTime = a.currentTime; }
+  else { const dt = lastRAF ? (now-lastRAF)/1000 : 0; currentTime += dt; }
+  lastRAF = now;
+  if(currentTime>=dur()){ if(loop){ currentTime=0; try{ a.currentTime=0; a.play().catch(()=>{}); }catch(e){} } else { currentTime=dur(); pause(); } }
+  movePlayhead(); renderPreviewFrame(); updateBeatPulse();
+  if(playing) requestAnimationFrame(tick);
+}
+function play(){ if(!S) return; playing=true; lastRAF=0; if(currentTime>=dur()-0.01) currentTime=0;
+  $("btnPlay").textContent="⏸ Pause"; requestAnimationFrame(tick);
+  const a=$("audio"); try{ a.currentTime=currentTime; const p=a.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} }
+function pause(){ playing=false; $("btnPlay").textContent="▶ Play"; $("audio").pause(); }
+
+// ---------- UI bindings ----------
+let scDragging=false;
+function bindUI(){
+  $("btnOpen").onclick=()=>$("filePicker").click();
+  $("filePicker").onchange=async(e)=>{ const f=e.target.files[0]; if(f){
+    const txt=await f.text(); try{ S=JSON.parse(txt); curPath=f.name;
+      $("curPath").textContent=f.name+" (lokal)"; selClip=-1; selMedia=null;
+      buildTree(); renderTimeline(); renderProps(); renderStats(); loadAudio(); loadWaveform(); toast("geladen: "+f.name);
+    }catch(err){ toast("JSON-Fehler: "+err.message); } } };
+  $("fileList").onchange=(e)=>{ if(e.target.value) loadScript(e.target.value); };
+  $("btnSave").onclick=async()=>{
+    if(!S){ toast("nichts zu speichern"); return; }
+    const body=JSON.stringify(S);
+    const path = curPath && curPath.includes("/") ? curPath : null;
+    const url = "/api/save" + (path?("?path="+enc(path)):"");
+    try{ const r=await fetch(url,{method:"POST",headers:{'content-type':'application/json'},body});
+      const j=await r.json(); if(!r.ok) throw new Error(j.error||r.status);
+      toast("gespeichert: "+(j.path||curPath||"out.json")); }
+    catch(err){ toast("Save fehlgeschlagen: "+err.message); } };
+
+  $("btnPlay").onclick=()=>{ playing?pause():play(); };
+  $("btnLoop").onclick=(e)=>{ loop=!loop; e.target.classList.toggle("active",loop); };
+  $("audio").onloadedmetadata=()=>{};
+  $("audio").onerror=()=>{ if(S&&S.audio&&S.audio.path) toast("Audio nicht ladbar: "+S.audio.path); };
+  $("scrub").oninput=(e)=>{ currentTime=(+e.target.value)/1000*dur(); try{ $("audio").currentTime=currentTime; }catch(_){} movePlayhead(); renderPreviewFrame(); updateBeatPulse(); };
+  $("scrub").addEventListener("pointerdown",()=>{scDragging=true; pause();});
+  $("scrub").addEventListener("pointerup",()=>{scDragging=false;});
+
+  // timeline body scrubbing on click
+  $("tlBody").onclick=(e)=>{
+    if(e.target.closest(".clip")) return;
+    const rect=$("tlInner").getBoundingClientRect();
+    const x=e.clientX-rect.left; currentTime=Math.max(0,Math.min(dur(), x/pxPerSec));
+    try{ $("audio").currentTime=currentTime; }catch(_){}
+    movePlayhead(); renderPreviewFrame(); updateBeatPulse();
+  };
+
+  $("zIn").onclick=()=>{ pxPerSec=Math.min(400, pxPerSec*1.4); renderTimeline(); };
+  $("zOut").onclick=()=>{ pxPerSec=Math.max(8, pxPerSec/1.4); renderTimeline(); };
+  $("zFit").onclick=()=>{ pxPerSec=Math.max(8, ($("tlBody").clientWidth-20)/Math.max(dur(),0.1)); renderTimeline(); };
+
+  window.addEventListener("keydown",(e)=>{
+    if(e.target.matches("input,select,textarea")) return;
+    if(e.code==="Space"){ e.preventDefault(); playing?pause():play(); }
+    if(e.key==="ArrowLeft"){ currentTime=Math.max(0,currentTime-0.5); movePlayhead(); renderPreviewFrame(); }
+    if(e.key==="ArrowRight"){ currentTime=Math.min(dur(),currentTime+0.5); movePlayhead(); renderPreviewFrame(); }
+  });
+}
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2200); }
+
+// re-render timeline on resize
+window.addEventListener("resize",()=>{ if(S && pxPerSec<200) renderTimeline(); });
+</script>
+</body>
+</html>

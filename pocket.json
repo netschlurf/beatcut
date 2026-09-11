@@ -8,7 +8,7 @@
     "beat_count": 165
   },
   "config": {
-    "every_n_beats": 4,
+    "every_n_beats": 8,
     "default_transition": "auto",
     "min_event_gap": 1.3,
     "zoom_max": 1.08,
@@ -19,211 +19,295 @@
     "IMG_001": {
       "id": "IMG_001",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-08-25 09-52-16.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_050954.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9513,
-        "contrast": 0.3264,
-        "saturation": 0.0356,
-        "warmth": 0.5163,
-        "sharpness": 0.0383,
-        "energy": 0.2247
+        "brightness": 0.4216,
+        "contrast": 0.9194,
+        "saturation": 0.1849,
+        "warmth": 0.5406,
+        "sharpness": 0.0185,
+        "energy": 0.4059
       }
     },
     "IMG_002": {
       "id": "IMG_002",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-08-25 09-52-29.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_053801.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9675,
-        "contrast": 0.2655,
-        "saturation": 0.0147,
-        "warmth": 0.5085,
-        "sharpness": 0.0623,
-        "energy": 0.204
+        "brightness": 0.5001,
+        "contrast": 0.7348,
+        "saturation": 0.2109,
+        "warmth": 0.5547,
+        "sharpness": 0.0629,
+        "energy": 0.3436
       }
     },
     "IMG_003": {
       "id": "IMG_003",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-08-26 09-48-03.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_053825.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9374,
-        "contrast": 0.4409,
-        "saturation": 0.0316,
-        "warmth": 0.5108,
-        "sharpness": 0.1205,
-        "energy": 0.277
+        "brightness": 0.5121,
+        "contrast": 0.8097,
+        "saturation": 0.1545,
+        "warmth": 0.5238,
+        "sharpness": 0.0466,
+        "energy": 0.3492
       }
     },
     "IMG_004": {
       "id": "IMG_004",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-08-27 16-33-10.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_053850.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9654,
-        "contrast": 0.4021,
-        "saturation": 0.0136,
-        "warmth": 0.5023,
-        "sharpness": 0.1285,
-        "energy": 0.2643
+        "brightness": 0.4909,
+        "contrast": 0.5027,
+        "saturation": 0.2205,
+        "warmth": 0.5524,
+        "sharpness": 0.0795,
+        "energy": 0.2708
       }
     },
     "IMG_005": {
       "id": "IMG_005",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-08-27 16-34-11.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_064642.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9668,
-        "contrast": 0.2841,
-        "saturation": 0.0111,
-        "warmth": 0.4902,
-        "sharpness": 0.0483,
-        "energy": 0.2063
+        "brightness": 0.4856,
+        "contrast": 0.857,
+        "saturation": 0.2024,
+        "warmth": 0.5304,
+        "sharpness": 0.0351,
+        "energy": 0.3807
       }
     },
     "IMG_006": {
       "id": "IMG_006",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-02 09-17-04.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_064647.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9698,
-        "contrast": 0.3152,
-        "saturation": 0.0128,
-        "warmth": 0.4841,
-        "sharpness": 0.0798,
-        "energy": 0.2247
+        "brightness": 0.4927,
+        "contrast": 0.7093,
+        "saturation": 0.1809,
+        "warmth": 0.532,
+        "sharpness": 0.0365,
+        "energy": 0.3203
       }
     },
     "IMG_007": {
       "id": "IMG_007",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-02 09-18-45.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_065454.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9667,
-        "contrast": 0.3229,
-        "saturation": 0.0152,
-        "warmth": 0.4804,
-        "sharpness": 0.0836,
-        "energy": 0.2284
+        "brightness": 0.5169,
+        "contrast": 0.8776,
+        "saturation": 0.1266,
+        "warmth": 0.5362,
+        "sharpness": 0.0601,
+        "energy": 0.3669
       }
     },
     "IMG_008": {
       "id": "IMG_008",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-03 15-25-18.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_065511.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.4547,
-        "contrast": 1,
-        "saturation": 0.0746,
-        "warmth": 0.5601,
-        "sharpness": 0.0525,
-        "energy": 0.3957
+        "brightness": 0.4529,
+        "contrast": 0.8058,
+        "saturation": 0.179,
+        "warmth": 0.5189,
+        "sharpness": 0.0467,
+        "energy": 0.3634
       }
     },
     "IMG_009": {
       "id": "IMG_009",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-03 16-32-44.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_065537.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9481,
-        "contrast": 0.371,
-        "saturation": 0.0209,
-        "warmth": 0.4863,
-        "sharpness": 0.0163,
-        "energy": 0.2301
+        "brightness": 0.5304,
+        "contrast": 0.7293,
+        "saturation": 0.0855,
+        "warmth": 0.5394,
+        "sharpness": 0.0401,
+        "energy": 0.2993
       }
     },
     "IMG_010": {
       "id": "IMG_010",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-03 16-34-33.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_084229.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9481,
-        "contrast": 0.371,
-        "saturation": 0.0209,
-        "warmth": 0.4863,
-        "sharpness": 0.0163,
-        "energy": 0.2301
+        "brightness": 0.431,
+        "contrast": 0.7952,
+        "saturation": 0.2275,
+        "warmth": 0.5396,
+        "sharpness": 0.0385,
+        "energy": 0.3794
       }
     },
     "IMG_011": {
       "id": "IMG_011",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-03 16-41-41.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_084235.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.842,
-        "contrast": 0.7749,
-        "saturation": 0.1681,
-        "warmth": 0.3244,
-        "sharpness": 0.0624,
-        "energy": 0.4109
+        "brightness": 0.4838,
+        "contrast": 0.784,
+        "saturation": 0.2302,
+        "warmth": 0.523,
+        "sharpness": 0.0513,
+        "energy": 0.3685
       }
     },
     "IMG_012": {
       "id": "IMG_012",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-03 16-42-09.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_084250.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9419,
-        "contrast": 0.4867,
-        "saturation": 0.0544,
-        "warmth": 0.4411,
-        "sharpness": 0.0271,
-        "energy": 0.2832
+        "brightness": 0.4739,
+        "contrast": 0.7485,
+        "saturation": 0.3314,
+        "warmth": 0.741,
+        "sharpness": 0.1201,
+        "energy": 0.4072
       }
     },
     "IMG_013": {
       "id": "IMG_013",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-04 08-33-42.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_093012.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9624,
-        "contrast": 0.1814,
-        "saturation": 0.0201,
-        "warmth": 0.5378,
-        "sharpness": 0.0207,
-        "energy": 0.1671
+        "brightness": 0.4173,
+        "contrast": 0.9602,
+        "saturation": 0.2267,
+        "warmth": 0.5164,
+        "sharpness": 0.0807,
+        "energy": 0.4481
       }
     },
     "IMG_014": {
       "id": "IMG_014",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-04 12-03-23.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_121125.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9456,
-        "contrast": 0.359,
-        "saturation": 0.0392,
-        "warmth": 0.4631,
-        "sharpness": 0.0524,
-        "energy": 0.2389
+        "brightness": 0.4653,
+        "contrast": 0.8672,
+        "saturation": 0.2774,
+        "warmth": 0.5489,
+        "sharpness": 0.0736,
+        "energy": 0.4223
       }
     },
     "IMG_015": {
       "id": "IMG_015",
       "type": "image",
-      "path": "/home/eima/projects/beatcut/testdata2/media/Screenshot from 2026-09-04 12-15-38.png",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_162231.jpg",
       "duration": null,
       "features": {
-        "brightness": 0.9314,
-        "contrast": 0.5091,
-        "saturation": 0.0289,
-        "warmth": 0.4861,
-        "sharpness": 0.1647,
-        "energy": 0.3075
+        "brightness": 0.4518,
+        "contrast": 0.7547,
+        "saturation": 0.3657,
+        "warmth": 0.4588,
+        "sharpness": 0.0509,
+        "energy": 0.412
+      }
+    },
+    "IMG_016": {
+      "id": "IMG_016",
+      "type": "image",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_185736.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.4604,
+        "contrast": 0.7507,
+        "saturation": 0.1765,
+        "warmth": 0.5032,
+        "sharpness": 0.0372,
+        "energy": 0.3399
+      }
+    },
+    "IMG_017": {
+      "id": "IMG_017",
+      "type": "image",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_194935.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.4952,
+        "contrast": 0.6199,
+        "saturation": 0.1095,
+        "warmth": 0.5244,
+        "sharpness": 0.0598,
+        "energy": 0.2682
+      }
+    },
+    "IMG_018": {
+      "id": "IMG_018",
+      "type": "image",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140613_212400.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.5024,
+        "contrast": 0.7608,
+        "saturation": 0.1853,
+        "warmth": 0.4677,
+        "sharpness": 0.0228,
+        "energy": 0.3361
+      }
+    },
+    "IMG_019": {
+      "id": "IMG_019",
+      "type": "image",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140614_001334.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.0915,
+        "contrast": 0.6332,
+        "saturation": 0.2946,
+        "warmth": 0.5267,
+        "sharpness": 0.0086,
+        "energy": 0.4081
+      }
+    },
+    "IMG_020": {
+      "id": "IMG_020",
+      "type": "image",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140614_093720.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.4866,
+        "contrast": 0.4876,
+        "saturation": 0.2325,
+        "warmth": 0.6221,
+        "sharpness": 0.0897,
+        "energy": 0.2726
+      }
+    },
+    "IMG_021": {
+      "id": "IMG_021",
+      "type": "image",
+      "path": "/home/eima/projects/beatcut/testdata2/media/20140614_094150.jpg",
+      "duration": null,
+      "features": {
+        "brightness": 0.5049,
+        "contrast": 0.5022,
+        "saturation": 0.1703,
+        "warmth": 0.486,
+        "sharpness": 0.0807,
+        "energy": 0.2525
       }
     }
   },
@@ -233,360 +317,220 @@
       "beat_index": -1,
       "energy": 0.263,
       "action": "show",
-      "media_id": "IMG_004",
+      "media_id": "IMG_017",
       "transition": "slide_in",
       "duration": 0.2786,
-      "reason": "lead-in before first beat (0.26) → image IMG_004"
+      "reason": "lead-in before first beat (0.26) → image IMG_017"
     },
     {
       "t": 0.2786,
       "beat_index": 0,
       "energy": 0.263,
       "action": "show",
-      "media_id": "IMG_003",
+      "media_id": "IMG_004",
       "transition": "slide_in",
-      "duration": 1.5325,
-      "reason": "low-energy beat (0.26) → image IMG_003"
-    },
-    {
-      "t": 1.8112,
-      "beat_index": 4,
-      "energy": 0.6289,
-      "action": "show",
-      "media_id": "IMG_011",
-      "transition": "zoom_in",
-      "duration": 1.3235,
-      "reason": "mid-energy beat (0.63) → image IMG_011"
+      "duration": 2.8561,
+      "reason": "low-energy beat (0.26) → image IMG_004"
     },
     {
       "t": 3.1347,
       "beat_index": 8,
       "energy": 0.3145,
       "action": "show",
-      "media_id": "IMG_015",
+      "media_id": "IMG_006",
       "transition": "slide_in",
-      "duration": 1.3003,
-      "reason": "low-energy beat (0.31) → image IMG_015"
-    },
-    {
-      "t": 4.435,
-      "beat_index": 12,
-      "energy": 0.6406,
-      "action": "show",
-      "media_id": "IMG_008",
-      "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "mid-energy beat (0.64) → image IMG_008"
+      "duration": 2.6006,
+      "reason": "low-energy beat (0.31) → image IMG_006"
     },
     {
       "t": 5.7353,
       "beat_index": 16,
       "energy": 0.2756,
       "action": "show",
-      "media_id": "IMG_012",
+      "media_id": "IMG_020",
       "transition": "slide_in",
-      "duration": 1.3235,
-      "reason": "low-energy beat (0.28) → image IMG_012"
-    },
-    {
-      "t": 7.0589,
-      "beat_index": 20,
-      "energy": 0.6515,
-      "action": "show",
-      "media_id": "IMG_011",
-      "transition": "zoom_in",
-      "duration": 1.3235,
-      "reason": "mid-energy beat (0.65) → image IMG_011"
+      "duration": 2.6471,
+      "reason": "low-energy beat (0.28) → image IMG_020"
     },
     {
       "t": 8.3824,
       "beat_index": 24,
       "energy": 0.305,
       "action": "show",
-      "media_id": "IMG_014",
+      "media_id": "IMG_009",
       "transition": "slide_in",
       "duration": 2.2988,
-      "reason": "low-energy beat (0.30) → image IMG_014"
+      "reason": "low-energy beat (0.30) → image IMG_009"
     },
     {
       "t": 10.6812,
       "beat_index": 32,
       "energy": 0.6668,
       "action": "show",
-      "media_id": "IMG_008",
+      "media_id": "IMG_013",
       "transition": "zoom_in",
-      "duration": 1.6022,
-      "reason": "high-energy beat (0.67) → image IMG_008"
-    },
-    {
-      "t": 12.2834,
-      "beat_index": 36,
-      "energy": 0.7643,
-      "action": "show",
-      "media_id": "IMG_009",
-      "transition": "flash",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.76) → image IMG_009"
+      "duration": 2.9025,
+      "reason": "high-energy beat (0.67) → image IMG_013"
     },
     {
       "t": 13.5837,
       "beat_index": 40,
       "energy": 0.2557,
       "action": "show",
-      "media_id": "IMG_010",
+      "media_id": "IMG_021",
       "transition": "slide_in",
       "duration": 2.2988,
-      "reason": "low-energy beat (0.26) → image IMG_010"
+      "reason": "low-energy beat (0.26) → image IMG_021"
     },
     {
       "t": 15.8824,
       "beat_index": 48,
       "energy": 0.7636,
       "action": "show",
-      "media_id": "IMG_007",
+      "media_id": "IMG_014",
       "transition": "flash",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.76) → image IMG_007"
-    },
-    {
-      "t": 17.1828,
-      "beat_index": 52,
-      "energy": 0.7767,
-      "action": "show",
-      "media_id": "IMG_001",
-      "transition": "flash",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.78) → image IMG_001"
+      "duration": 2.6006,
+      "reason": "high-energy beat (0.76) → image IMG_014"
     },
     {
       "t": 18.4831,
       "beat_index": 56,
       "energy": 0.2468,
       "action": "show",
-      "media_id": "IMG_006",
+      "media_id": "IMG_018",
       "transition": "fade",
-      "duration": 1.3003,
-      "reason": "low-energy beat (0.25) → image IMG_006"
-    },
-    {
-      "t": 19.7834,
-      "beat_index": 60,
-      "energy": 0.7406,
-      "action": "show",
-      "media_id": "IMG_005",
-      "transition": "zoom_in",
-      "duration": 1.3235,
-      "reason": "high-energy beat (0.74) → image IMG_005"
+      "duration": 2.6239,
+      "reason": "low-energy beat (0.25) → image IMG_018"
     },
     {
       "t": 21.1069,
       "beat_index": 64,
       "energy": 0.7058,
       "action": "show",
-      "media_id": "IMG_002",
+      "media_id": "IMG_015",
       "transition": "zoom_in",
       "duration": 2.6006,
-      "reason": "high-energy beat (0.71) → image IMG_002"
+      "reason": "high-energy beat (0.71) → image IMG_015"
     },
     {
       "t": 23.7076,
       "beat_index": 72,
       "energy": 0.2388,
       "action": "show",
-      "media_id": "IMG_013",
+      "media_id": "IMG_016",
       "transition": "fade",
       "duration": 2.6006,
-      "reason": "low-energy beat (0.24) → image IMG_013"
+      "reason": "low-energy beat (0.24) → image IMG_016"
     },
     {
       "t": 26.3082,
       "beat_index": 80,
       "energy": 0.7402,
       "action": "show",
-      "media_id": "IMG_015",
+      "media_id": "IMG_019",
       "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.74) → image IMG_015"
-    },
-    {
-      "t": 27.6085,
-      "beat_index": 84,
-      "energy": 0.7189,
-      "action": "show",
-      "media_id": "IMG_012",
-      "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.72) → image IMG_012"
+      "duration": 2.6006,
+      "reason": "high-energy beat (0.74) → image IMG_019"
     },
     {
       "t": 28.9088,
       "beat_index": 88,
       "energy": 0.7121,
       "action": "show",
-      "media_id": "IMG_003",
+      "media_id": "IMG_012",
       "transition": "zoom_in",
-      "duration": 1.4629,
-      "reason": "high-energy beat (0.71) → image IMG_003"
+      "duration": 2.6006,
+      "reason": "high-energy beat (0.71) → image IMG_012"
     },
     {
-      "t": 30.3717,
-      "beat_index": 92,
-      "energy": 0.5073,
+      "t": 31.5095,
+      "beat_index": 96,
+      "energy": 0.8065,
       "action": "show",
-      "media_id": "IMG_004",
-      "transition": "zoom_in",
-      "duration": 2.4381,
-      "reason": "mid-energy beat (0.51) → image IMG_004"
-    },
-    {
-      "t": 32.8098,
-      "beat_index": 100,
-      "energy": 0.7577,
-      "action": "show",
-      "media_id": "IMG_011",
+      "media_id": "IMG_001",
       "transition": "flash",
-      "duration": 1.3235,
-      "reason": "high-energy beat (0.76) → image IMG_011"
+      "duration": 2.6239,
+      "reason": "high-energy beat (0.81) → image IMG_001"
     },
     {
       "t": 34.1333,
       "beat_index": 104,
       "energy": 0.2677,
       "action": "show",
-      "media_id": "IMG_014",
+      "media_id": "IMG_002",
       "transition": "slide_in",
-      "duration": 1.3003,
-      "reason": "low-energy beat (0.27) → image IMG_014"
-    },
-    {
-      "t": 35.4337,
-      "beat_index": 108,
-      "energy": 0.7602,
-      "action": "show",
-      "media_id": "IMG_008",
-      "transition": "flash",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.76) → image IMG_008"
+      "duration": 2.6006,
+      "reason": "low-energy beat (0.27) → image IMG_002"
     },
     {
       "t": 36.734,
       "beat_index": 112,
       "energy": 0.7148,
       "action": "show",
-      "media_id": "IMG_009",
+      "media_id": "IMG_005",
       "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.71) → image IMG_009"
-    },
-    {
-      "t": 38.0343,
-      "beat_index": 116,
-      "energy": 0.7029,
-      "action": "show",
-      "media_id": "IMG_010",
-      "transition": "zoom_in",
-      "duration": 1.5093,
-      "reason": "high-energy beat (0.70) → image IMG_010"
+      "duration": 2.8096,
+      "reason": "high-energy beat (0.71) → image IMG_005"
     },
     {
       "t": 39.5436,
       "beat_index": 120,
       "energy": 0.3449,
       "action": "show",
-      "media_id": "IMG_007",
+      "media_id": "IMG_003",
       "transition": "slide_in",
       "duration": 2.4149,
-      "reason": "mid-energy beat (0.34) → image IMG_007"
+      "reason": "mid-energy beat (0.34) → image IMG_003"
     },
     {
       "t": 41.9585,
       "beat_index": 128,
       "energy": 0.7505,
       "action": "show",
-      "media_id": "IMG_001",
+      "media_id": "IMG_010",
       "transition": "flash",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.75) → image IMG_001"
-    },
-    {
-      "t": 43.2588,
-      "beat_index": 132,
-      "energy": 0.7008,
-      "action": "show",
-      "media_id": "IMG_006",
-      "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.70) → image IMG_006"
+      "duration": 2.6006,
+      "reason": "high-energy beat (0.75) → image IMG_010"
     },
     {
       "t": 44.5591,
       "beat_index": 136,
       "energy": 0.2911,
       "action": "show",
-      "media_id": "IMG_005",
+      "media_id": "IMG_008",
       "transition": "slide_in",
-      "duration": 1.3003,
-      "reason": "low-energy beat (0.29) → image IMG_005"
-    },
-    {
-      "t": 45.8594,
-      "beat_index": 140,
-      "energy": 0.7656,
-      "action": "show",
-      "media_id": "IMG_002",
-      "transition": "flash",
-      "duration": 1.3235,
-      "reason": "high-energy beat (0.77) → image IMG_002"
+      "duration": 2.6239,
+      "reason": "low-energy beat (0.29) → image IMG_008"
     },
     {
       "t": 47.1829,
       "beat_index": 144,
       "energy": 0.7267,
       "action": "show",
-      "media_id": "IMG_013",
+      "media_id": "IMG_011",
       "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.73) → image IMG_013"
-    },
-    {
-      "t": 48.4833,
-      "beat_index": 148,
-      "energy": 0.6473,
-      "action": "show",
-      "media_id": "IMG_015",
-      "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "mid-energy beat (0.65) → image IMG_015"
+      "duration": 2.6006,
+      "reason": "high-energy beat (0.73) → image IMG_011"
     },
     {
       "t": 49.7836,
       "beat_index": 152,
       "energy": 0.7331,
       "action": "show",
-      "media_id": "IMG_012",
+      "media_id": "IMG_007",
       "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "high-energy beat (0.73) → image IMG_012"
-    },
-    {
-      "t": 51.0839,
-      "beat_index": 156,
-      "energy": 0.5929,
-      "action": "show",
-      "media_id": "IMG_003",
-      "transition": "zoom_in",
-      "duration": 1.3003,
-      "reason": "mid-energy beat (0.59) → image IMG_003"
+      "duration": 2.6006,
+      "reason": "high-energy beat (0.73) → image IMG_007"
     },
     {
       "t": 52.3842,
       "beat_index": 160,
       "energy": 0.7587,
       "action": "show",
-      "media_id": "IMG_004",
+      "media_id": "IMG_013",
       "transition": "flash",
       "duration": 2.1893,
-      "reason": "high-energy beat (0.76) → image IMG_004"
+      "reason": "high-energy beat (0.76) → image IMG_013"
     }
   ]
 }

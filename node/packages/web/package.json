@@ -1,0 +1,11 @@
+{
+  "name": "@beatcut/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BeatCut script editor — timeline, media tree, clip properties and preview",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}
