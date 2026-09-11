@@ -1,14 +1,19 @@
 // BeatCut web editor — zero-dependency local server.
-// Serves the editor HTML and three small JSON/file endpoints.
+// Serves the editor HTML, file/script endpoints, and project pipeline (analyze/render).
 // Local-only by design: reads/writes files by absolute path on this machine.
 import http from "node:http";
-import { readFile, writeFile, stat } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { readFile, writeFile, stat, mkdir, readdir } from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
+import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { randomUUID } from "node:crypto";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..", "..", ".."); // beatcut repo root
+const PROJECTS = path.join(ROOT, "projects");
+const CLI = path.join(ROOT, "node", "packages", "cli", "src", "cli.js");
+const NATIVE = path.join(ROOT, "native", "build", "beatcut-native");
 const PORT = Number(process.env.PORT || 4321);
 
 const MIME = {
@@ -37,6 +42,36 @@ function safeAbs(p) {
   if (!p) return null;
   const abs = path.isAbsolute(p) ? path.resolve(p) : path.resolve(ROOT, p);
   return abs;
+}
+
+// ---------- job system ----------
+const jobs = new Map(); // id -> { status, log, result, proc }
+
+function startJob(label, args, env, onDone) {
+  const id = randomUUID().slice(0, 8);
+  const job = { id, status: "running", log: "", result: null, error: null, label };
+  jobs.set(id, job);
+  // strip LD_LIBRARY_PATH from VSCode extensions that shadow system libs the native binary needs
+  const clean = { ...process.env };
+  delete clean.LD_LIBRARY_PATH;
+  const fullEnv = { ...clean, ...env };
+  const proc = spawn("node", args, { env: fullEnv, cwd: ROOT });
+  job.proc = proc;
+  const push = (s) => { job.log += s; };
+  proc.stdout.on("data", (d) => push(d.toString()));
+  proc.stderr.on("data", (d) => push(d.toString()));
+  proc.on("close", (code) => {
+    if (code === 0) { job.status = "done"; if (onDone) { try { job.result = onDone(); } catch (e) { job.status = "error"; job.error = String(e.message || e); } } }
+    else { job.status = "error"; job.error = `exit ${code}`; }
+  });
+  proc.on("error", (e) => { job.status = "error"; job.error = String(e); });
+  return id;
+}
+
+async function readBody(req) {
+  const chunks = [];
+  for await (const c of req) chunks.push(c);
+  return Buffer.concat(chunks);
 }
 
 async function handle(req, res) {
@@ -88,6 +123,92 @@ async function handle(req, res) {
     } catch (e) {
       return send(res, 400, JSON.stringify({ error: String(e.message || e) }), { "content-type": MIME[".json"] });
     }
+  }
+
+  // ---- project pipeline ----
+
+  // Create new project dir
+  if (pathname === "/api/project/new" && req.method === "POST") {
+    await mkdir(PROJECTS, { recursive: true });
+    const id = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    const dir = path.join(PROJECTS, id);
+    await mkdir(path.join(dir, "audio"), { recursive: true });
+    await mkdir(path.join(dir, "media"), { recursive: true });
+    return send(res, 200, JSON.stringify({ id, dir }), { "content-type": MIME[".json"] });
+  }
+
+  // Upload file into project. ?id=<projectId>&sub=audio|media&name=<filename>
+  if (pathname === "/api/upload" && req.method === "POST") {
+    const id = url.searchParams.get("id");
+    const sub = url.searchParams.get("sub") || "media";
+    const name = url.searchParams.get("name");
+    if (!id || !name) return send(res, 400, JSON.stringify({ error: "id and name required" }), { "content-type": MIME[".json"] });
+    const dir = path.join(PROJECTS, id, sub);
+    await mkdir(dir, { recursive: true });
+    const body = await readBody(req);
+    const fp = path.join(dir, name);
+    await writeFile(fp, body);
+    return send(res, 200, JSON.stringify({ ok: true, path: fp }), { "content-type": MIME[".json"] });
+  }
+
+  // List files in a project sub-dir
+  if (pathname === "/api/project/files") {
+    const id = url.searchParams.get("id");
+    const sub = url.searchParams.get("sub") || "media";
+    if (!id) return send(res, 400, JSON.stringify({ error: "id required" }), { "content-type": MIME[".json"] });
+    const dir = path.join(PROJECTS, id, sub);
+    try {
+      const files = (await readdir(dir)).sort();
+      return send(res, 200, JSON.stringify({ files, dir }), { "content-type": MIME[".json"] });
+    } catch (e) {
+      return send(res, 200, JSON.stringify({ files: [], dir }), { "content-type": MIME[".json"] });
+    }
+  }
+
+  // Run analysis. Body: { id, audio, params }
+  if (pathname === "/api/analyze" && req.method === "POST") {
+    const body = JSON.parse((await readBody(req)).toString("utf8"));
+    const { id, audio, params } = body;
+    if (!id || !audio) return send(res, 400, JSON.stringify({ error: "id and audio required" }), { "content-type": MIME[".json"] });
+    const audioPath = path.join(PROJECTS, id, "audio", audio);
+    const mediaDir = path.join(PROJECTS, id, "media");
+    const scriptPath = path.join(PROJECTS, id, "script.json");
+    const p = params || {};
+    const args = [CLI, "analyze", "--audio", audioPath, "--media", mediaDir,
+      "--every-n", String(p.every_n_beats || 1),
+      "--min-gap", String(p.min_event_gap ?? 0.18),
+      "--transition", String(p.default_transition || "auto"),
+      "--zoom", String(p.zoom_max ?? 1.08),
+      "--fade-in", String(p.fade_in_max ?? 0.3),
+      "-o", scriptPath];
+    const env = existsSync(NATIVE) ? { BEATCUT_NATIVE: NATIVE } : {};
+    const jobId = startJob("analyze", args, env, () => {
+      const raw = readFileSync(scriptPath, "utf8");
+      return { script: JSON.parse(raw), scriptPath };
+    });
+    return send(res, 200, JSON.stringify({ jobId }), { "content-type": MIME[".json"] });
+  }
+
+  // Run render. Body: { scriptPath, outName? }
+  if (pathname === "/api/render" && req.method === "POST") {
+    const body = JSON.parse((await readBody(req)).toString("utf8"));
+    const scriptPath = body.scriptPath || (body.id ? path.join(PROJECTS, body.id, "script.json") : null);
+    if (!scriptPath) return send(res, 400, JSON.stringify({ error: "scriptPath or id required" }), { "content-type": MIME[".json"] });
+    const outDir = body.id ? path.join(PROJECTS, body.id) : path.dirname(scriptPath);
+    const outName = body.outName || "out.mp4";
+    const outPath = path.join(outDir, outName);
+    const args = [CLI, "render", scriptPath, "-o", outPath];
+    const env = existsSync(NATIVE) ? { BEATCUT_NATIVE: NATIVE } : {};
+    const jobId = startJob("render", args, env, () => ({ outPath }));
+    return send(res, 200, JSON.stringify({ jobId }), { "content-type": MIME[".json"] });
+  }
+
+  // Poll job status
+  if (pathname === "/api/job") {
+    const id = url.searchParams.get("id");
+    const job = jobs.get(id);
+    if (!job) return send(res, 404, JSON.stringify({ error: "unknown job" }), { "content-type": MIME[".json"] });
+    return send(res, 200, JSON.stringify({ id: job.id, status: job.status, log: job.log, result: job.result, error: job.error, label: job.label }), { "content-type": MIME[".json"] });
   }
 
   // List *.json in repo root for the file picker.

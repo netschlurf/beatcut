@@ -138,17 +138,41 @@
     border:3px solid #4aa8ff;transform:translate(-50%,-50%) scale(1);opacity:0;pointer-events:none;
     transition:opacity .08s ease-out, transform .12s ease-out;box-shadow:0 0 24px rgba(74,168,255,.4)}
   .beatno{font-family:ui-monospace,monospace;color:var(--acc);font-size:12px;min-width:70px}
+
+  /* project panel */
+  .proj{padding:14px 18px;max-width:680px}
+  .drop{border:2px dashed var(--line);border-radius:10px;padding:18px;text-align:center;cursor:pointer;
+    transition:border-color .15s,background .15s}
+  .drop:hover{border-color:var(--acc);background:var(--bg2)}
+  .drop.drag{border-color:var(--acc);background:#1c2735}
+  .drop .icon{font-size:28px;color:var(--mut);margin-bottom:6px}
+  .drop .lbl{font-weight:600}
+  .drop .sub{color:var(--mut);font-size:12px;margin-top:4px}
+  .filelist{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .filechip{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--line);
+    border-radius:6px;padding:4px 8px;font-size:12px}
+  .filechip .rm{cursor:pointer;color:var(--mut);margin-left:4px}
+  .filechip .rm:hover{color:var(--bad)}
+  .joblog{background:#0d0f12;border:1px solid var(--line);border-radius:8px;padding:10px;
+    font-family:ui-monospace,monospace;font-size:11px;color:#9ba5b8;max-height:240px;overflow:auto;
+    white-space:pre-wrap;margin-top:10px}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line);
+    border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .bar-out{display:flex;gap:8px;align-items:center;margin-top:10px}
 </style>
 </head>
 <body>
   <header>
     <div class="title">BeatCut</div>
+    <button id="btnNew">+ Neu</button>
     <button id="btnOpen">Open…</button>
     <input id="filePicker" type="file" accept=".json,application/json" hidden />
     <select id="fileList" title="repo JSON files" style="max-width:180px"></select>
     <span class="path" id="curPath">—</span>
     <div class="spacer"></div>
     <div class="stats" id="stats"></div>
+    <button id="btnRender">Render Video</button>
     <button id="btnSave">Save</button>
   </header>
 
@@ -160,8 +184,13 @@
 
     <section class="mid">
       <div class="tabs">
+        <button id="tabProj">Projekt</button>
         <button id="tabProps" class="active">Eigenschaften</button>
         <button id="tabPreview">Vorschau</button>
+      </div>
+
+      <div class="pane hidden" id="paneProj">
+        <div class="proj" id="proj"></div>
       </div>
 
       <div class="pane" id="paneProps">
@@ -237,6 +266,14 @@ let currentTime = 0;
 let playing = false;
 let loop = false;
 let lastRAF = 0;
+
+// project state
+let projId = null;
+let projAudio = null;     // filename
+let projMedia = [];       // [filename]
+let projParams = { every_n_beats:2, min_event_gap:1, default_transition:"auto", zoom_max:1.08, fade_in_max:0.3 };
+let scriptPath = null;    // abs path of current script
+let renderOutPath = null;
 
 // ---------- boot ----------
 (async function init(){
@@ -580,11 +617,16 @@ const esc=(s)=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;
 let imgA=$("imgA"), imgB=$("imgB"), stageLabel=$("stageLabel"), flashEl=$("flash");
 let curLayer=imgA, prevLayer=imgB;
 let activeClipIdx=-1;
-function switchTab(t){ mode=t; $("tabProps").classList.toggle("active",t==="props");
+function switchTab(t){ mode=t;
+  $("tabProj").classList.toggle("active",t==="proj");
+  $("tabProps").classList.toggle("active",t==="props");
   $("tabPreview").classList.toggle("active",t==="preview");
+  $("paneProj").classList.toggle("hidden",t!=="proj");
   $("paneProps").classList.toggle("hidden",t!=="props");
   $("panePreview").classList.toggle("hidden",t!=="preview");
-  if(t==="preview") renderPreviewFrame(); }
+  if(t==="preview") renderPreviewFrame();
+  if(t==="proj") renderProject(); }
+$("tabProj").onclick=()=>switchTab("proj");
 $("tabProps").onclick=()=>switchTab("props");
 $("tabPreview").onclick=()=>switchTab("preview");
 
@@ -653,6 +695,7 @@ function pause(){ playing=false; $("btnPlay").textContent="▶ Play"; $("audio")
 // ---------- UI bindings ----------
 let scDragging=false;
 function bindUI(){
+  $("btnNew").onclick=()=>newProject();
   $("btnOpen").onclick=()=>$("filePicker").click();
   $("filePicker").onchange=async(e)=>{ const f=e.target.files[0]; if(f){
     const txt=await f.text(); try{ S=JSON.parse(txt); curPath=f.name;
@@ -660,6 +703,9 @@ function bindUI(){
       buildTree(); renderTimeline(); renderProps(); renderStats(); loadAudio(); loadWaveform(); toast("geladen: "+f.name);
     }catch(err){ toast("JSON-Fehler: "+err.message); } } };
   $("fileList").onchange=(e)=>{ if(e.target.value) loadScript(e.target.value); };
+  $("btnRender").onclick=()=>{ if(!S){ toast("erst analysieren"); switchTab("proj"); return; }
+    switchTab("proj"); if($("btnDoRender")) $("btnDoRender").click();
+    else { renderProject(); setTimeout(()=>$("btnDoRender")?.click(),100); } };
   $("btnSave").onclick=async()=>{
     if(!S){ toast("nichts zu speichern"); return; }
     const body=JSON.stringify(S);
@@ -700,6 +746,210 @@ function bindUI(){
 }
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show");
   clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2200); }
+
+// ---------- project pipeline ----------
+async function newProject(){
+  try{
+    const r = await fetch("/api/project/new",{method:"POST"});
+    const j = await r.json();
+    projId = j.id; projAudio=null; projMedia=[]; scriptPath=null; renderOutPath=null; S=null;
+    $("curPath").textContent = "projekt: "+projId;
+    switchTab("proj"); renderProject(); renderStats(); buildTree(); renderTimeline();
+    toast("neues Projekt: "+projId);
+  }catch(e){ toast("Fehler: "+e.message); }
+}
+
+function renderProject(){
+  const p = $("proj"); if(!p) return;
+  if(!projId){
+    p.innerHTML = `<h2>Projekt</h2><p class="hint">Kein aktives Projekt. Klicke „+ Neu" um eines zu starten,
+      oder öffne ein bestehendes Script.json.</p>
+      <button onclick="newProject()" style="margin-top:8px">+ Neues Projekt</button>`;
+    return;
+  }
+  const audioChips = projAudio ? `<span class="filechip">${esc(projAudio)} <span class="rm" onclick="projAudio=null;renderProject()">×</span></span>` : "";
+  const mediaChips = projMedia.map(f=>`<span class="filechip">${esc(f)} <span class="rm" onclick="projMedia=projMedia.filter(x=>x!=='${esc(f)}');renderProject()">×</span></span>`).join("");
+  const hasScript = S ? `<div class="card"><h3>Script</h3>
+    <div class="hint">Script geladen: ${S.timeline?.length||0} Clips, BPM ${S.audio?.bpm_estimate?.toFixed(1)||"?"}.
+      Wechsle zu Eigenschaften/Vorschau zum Editieren.</div></div>` : "";
+  const renderSection = S ? `
+    <div class="card"><h3>Video rendern</h3>
+      <div class="hint">Rendert das aktuelle Script als MP4 mit ffmpeg (Ken-Burns-Zoom, Transitions, Audio-Mux).</div>
+      <div class="bar-out">
+        <button id="btnDoRender">Render starten</button>
+        <span id="renderStatus"></span>
+      </div>
+      <div class="joblog" id="renderLog" style="display:none"></div>
+      <div id="renderResult"></div>
+    </div>` : "";
+  p.innerHTML = `
+    <h2>Projekt <span style="color:var(--mut);font-weight:400;font-size:12px">${esc(projId)}</span></h2>
+    <div class="card"><h3>1. Audio</h3>
+      <div class="drop" id="dropAudio">
+        <div class="icon">♪</div>
+        <div class="lbl">${projAudio?esc(projAudio):"Audio-Datei hierher ziehen oder klicken"}</div>
+        <div class="sub">MP3, WAV — wird als Zeitachse verwendet</div>
+      </div>
+      <div class="filelist">${audioChips}</div>
+      <input id="audioInput" type="file" accept="audio/*" hidden />
+    </div>
+    <div class="card"><h3>2. Medien</h3>
+      <div class="drop" id="dropMedia">
+        <div class="icon">◳</div>
+        <div class="lbl">${projMedia.length?`${projMedia.length} Datei(en)`:"Bilder/Videos hierher ziehen oder klicken"}</div>
+        <div class="sub">JPG, PNG, WEBP, MP4, MOV — wird analysiert und gematcht</div>
+      </div>
+      <div class="filelist">${mediaChips}</div>
+      <input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />
+    </div>
+    <div class="card"><h3>3. Analyse-Parameter</h3>
+      <div class="grid">
+        <label>every_n_beats</label><input type="number" min="1" value="${projParams.every_n_beats}" id="p_every">
+        <label>min_event_gap (s)</label><input type="number" step="0.01" value="${projParams.min_event_gap}" id="p_gap">
+        <label>transition</label><select id="p_trans">
+          ${["auto","cut","fade","slide_in","zoom_in","flash","hold"].map(t=>`<option ${t===projParams.default_transition?"selected":""}>${t}</option>`).join("")}
+        </select>
+        <label>zoom_max</label><input type="number" step="0.01" value="${projParams.zoom_max}" id="p_zoom">
+        <label>fade_in_max (s)</label><input type="number" step="0.01" value="${projParams.fade_in_max}" id="p_fade">
+      </div></div>
+    <div class="card"><h3>4. Analyse starten</h3>
+      <div class="hint">Extrahiert Beats, BPM, Energy und Visual-Features, matcht Medien → Script JSON.</div>
+      <div class="bar-out">
+        <button id="btnDoAnalyze">Analysieren</button>
+        <span id="analyzeStatus"></span>
+      </div>
+      <div class="joblog" id="analyzeLog" style="display:none"></div>
+    </div>
+    ${hasScript}
+    ${renderSection}`;
+  bindProjectUI();
+}
+
+function bindProjectUI(){
+  // read params
+  const readParams = () => {
+    projParams.every_n_beats = parseInt($("p_every")?.value||"2",10);
+    projParams.min_event_gap = parseFloat($("p_gap")?.value||"1");
+    projParams.default_transition = $("p_trans")?.value || "auto";
+    projParams.zoom_max = parseFloat($("p_zoom")?.value||"1.08");
+    projParams.fade_in_max = parseFloat($("p_fade")?.value||"0.3");
+  };
+  ["p_every","p_gap","p_trans","p_zoom","p_fade"].forEach(id=>{ const e=$(id); if(e) e.oninput=readParams; });
+
+  // audio drop
+  const da=$("dropAudio"), ai=$("audioInput");
+  if(da){
+    da.onclick=()=>ai.click();
+    ai.onchange=async(e)=>{ const f=e.target.files[0]; if(f){ await uploadFile(f,"audio"); } };
+    da.addEventListener("dragover",e=>{e.preventDefault();da.classList.add("drag")});
+    da.addEventListener("dragleave",()=>da.classList.remove("drag"));
+    da.addEventListener("drop",async e=>{ e.preventDefault(); da.classList.remove("drag");
+      const f=e.dataTransfer.files[0]; if(f) await uploadFile(f,"audio"); });
+  }
+  // media drop
+  const dm=$("dropMedia"), mi=$("mediaInput");
+  if(dm){
+    dm.onclick=()=>mi.click();
+    mi.onchange=async(e)=>{ for(const f of e.target.files){ await uploadFile(f,"media"); } };
+    dm.addEventListener("dragover",e=>{e.preventDefault();dm.classList.add("drag")});
+    dm.addEventListener("dragleave",()=>dm.classList.remove("drag"));
+    dm.addEventListener("drop",async e=>{ e.preventDefault(); dm.classList.remove("drag");
+      for(const f of e.dataTransfer.files){ await uploadFile(f,"media"); } });
+  }
+  // analyze
+  const ba=$("btnDoAnalyze");
+  if(ba) ba.onclick=()=>runAnalyze();
+  // render
+  const br=$("btnDoRender");
+  if(br) br.onclick=()=>runRender();
+}
+
+async function uploadFile(file, sub){
+  if(!projId){ toast("erst Projekt erstellen"); return; }
+  try{
+    const r = await fetch(`/api/upload?id=${enc(projId)}&sub=${sub}&name=${enc(file.name)}`,{
+      method:"POST", body: file });
+    if(!r.ok) throw new Error("upload failed");
+    if(sub==="audio") projAudio = file.name;
+    else { if(!projMedia.includes(file.name)) projMedia.push(file.name); }
+    renderProject();
+    toast("hochgeladen: "+file.name);
+  }catch(e){ toast("Upload-Fehler: "+e.message); }
+}
+
+async function runAnalyze(){
+  if(!projId || !projAudio){ toast("Audio fehlt"); return; }
+  if(projMedia.length===0){ toast("Medien fehlen"); return; }
+  readParamsFromUI();
+  $("analyzeLog").style.display="block";
+  $("analyzeStatus").innerHTML = '<span class="spinner"></span> analysiere…';
+  $("btnDoAnalyze").disabled = true;
+  try{
+    const r = await fetch("/api/analyze",{method:"POST",headers:{'content-type':'application/json'},
+      body:JSON.stringify({id:projId, audio:projAudio, params:projParams})});
+    const j = await r.json(); if(!r.ok) throw new Error(j.error||r.status);
+    await pollJob(j.jobId, "analyze");
+  }catch(e){ $("analyzeStatus").textContent="Fehler: "+e.message; $("btnDoAnalyze").disabled=false; }
+}
+function readParamsFromUI(){
+  projParams.every_n_beats = parseInt($("p_every")?.value||"2",10);
+  projParams.min_event_gap = parseFloat($("p_gap")?.value||"1");
+  projParams.default_transition = $("p_trans")?.value || "auto";
+  projParams.zoom_max = parseFloat($("p_zoom")?.value||"1.08");
+  projParams.fade_in_max = parseFloat($("p_fade")?.value||"0.3");
+}
+
+async function runRender(){
+  if(!scriptPath && !S){ toast("kein Script"); return; }
+  const sp = scriptPath || (projId ? null : null);
+  $("renderLog").style.display="block";
+  $("renderStatus").innerHTML = '<span class="spinner"></span> rendere…';
+  $("btnDoRender").disabled = true;
+  try{
+    const body = projId ? {id:projId} : {scriptPath:sp};
+    const r = await fetch("/api/render",{method:"POST",headers:{'content-type':'application/json'},
+      body:JSON.stringify(body)});
+    const j = await r.json(); if(!r.ok) throw new Error(j.error||r.status);
+    await pollJob(j.jobId, "render");
+  }catch(e){ $("renderStatus").textContent="Fehler: "+e.message; $("btnDoRender").disabled=false; }
+}
+
+async function pollJob(jobId, kind){
+  const logEl = $(kind==="analyze"?"analyzeLog":"renderLog");
+  const statusEl = $(kind==="analyze"?"analyzeStatus":"renderStatus");
+  const btn = $(kind==="analyze"?"btnDoAnalyze":"btnDoRender");
+  const tick = async () => {
+    try{
+      const r = await fetch("/api/job?id="+jobId);
+      const j = await r.json();
+      if(logEl){ logEl.textContent = j.log || ""; logEl.scrollTop = logEl.scrollHeight; }
+      if(j.status==="done"){
+        btn.disabled = false;
+        if(kind==="analyze"){
+          statusEl.textContent = "fertig — " + (j.result?.script?.timeline?.length||0) + " Clips";
+          if(j.result?.script){ S = j.result.script; scriptPath = j.result.scriptPath;
+            curPath = scriptPath; $("curPath").textContent = scriptPath;
+            selClip=-1; selMedia=null; buildTree(); renderTimeline(); renderProps(); renderStats();
+            loadAudio(); loadWaveform(); renderProject(); toast("Analyse fertig: "+S.timeline.length+" Clips");
+          }
+        } else {
+          statusEl.textContent = "fertig";
+          renderOutPath = j.result?.outPath;
+          const rr = $("renderResult");
+          if(rr && renderOutPath){ rr.innerHTML = `<div class="bar-out">
+            <a href="/api/file?path=${enc(renderOutPath)}" download>MP4 herunterladen</a>
+            <video src="/api/file?path=${enc(renderOutPath)}" controls style="max-width:100%;border-radius:8px;margin-top:8px"></video>
+            </div>`; }
+          toast("Render fertig");
+        }
+      } else if(j.status==="error"){
+        btn.disabled = false;
+        statusEl.innerHTML = '<span style="color:var(--bad)">Fehler: '+esc(j.error||"")+'</span>';
+      } else { setTimeout(tick, 600); }
+    }catch(e){ btn.disabled=false; statusEl.textContent="Poll-Fehler: "+e.message; }
+  };
+  tick();
+}
 
 // re-render timeline on resize
 window.addEventListener("resize",()=>{ if(S && pxPerSec<200) renderTimeline(); });
